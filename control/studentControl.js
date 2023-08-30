@@ -89,9 +89,9 @@ const handleStudentAnswer = async (req, res) => {
             const questionId = data.questionId
             const answer = data.answer
             for (const modul of findModuleIdInAllQuestions) {
-                testTitle = modul.testTitle
-                newAssId = modul._id
                 if (modul._id.toString() == assessmentId.toString()) {
+                    testTitle = modul.testTitle
+                    newAssId = modul._id
                     for (const quest of modul.allQuestions) {
                         if (questionId.toString() == quest._id.toString() && quest.answer == answer) {
                             score += 1;
@@ -124,7 +124,7 @@ const handleStudentAnswer = async (req, res) => {
             const checkStudent = grades.find(std => std.studentId.toString() === id.toString())
             if (!checkStudent) {
                 grades.push({ moduleName, moduleCode, grade: score, studentId: id, studentName: firstName });
-                await AllGrades.findOneAndUpdate({ assesmentId: _id }, { grades });
+                await AllGrades.findOneAndUpdate({ assesmentId: newAssId }, { grades });
             }
         } else {
             const newGradePush = await AllGrades(newGrade);
@@ -137,7 +137,6 @@ const handleStudentAnswer = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 const handleCheckStudentAttempt = async (req, res) => {
     try {
@@ -181,7 +180,6 @@ const handleFetchInformations = async (req, res) => {
     }
     catch (err) { console.error(err) }
 }
-
 
 const handleFetchResult = async (req, res) => {
     try {
@@ -246,4 +244,17 @@ const handleSavePersonalInfoChanges = async (req, res) => {
     } catch (err) { console.error(err) }
 }
 
-module.exports = { handleSavePersonalInfoChanges, handlePersonalInfoCancelEdit, handleEditPInformation, handleFetchResult, handleFetchInformations, handleCheckStudentAttempt, handleStudentAnswer, handlePullAssesment, handlePullModuleData, handleFetchPInfo, handleFetchMyModule, handleChosenModule }
+module.exports = {
+    handleSavePersonalInfoChanges,
+    handlePersonalInfoCancelEdit,
+    handleEditPInformation,
+    handleFetchResult,
+    handleFetchInformations,
+    handleCheckStudentAttempt,
+    handleStudentAnswer,
+    handlePullAssesment,
+    handlePullModuleData,
+    handleFetchPInfo,
+    handleFetchMyModule,
+    handleChosenModule
+}
