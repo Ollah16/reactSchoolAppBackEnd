@@ -1,4 +1,4 @@
-const { AllModules, Students, AllQuestions, Announcements, AllGrades } = require("../model/schoolData")
+const { AllModules, Students, AllQuestions, Announcements, AllGrades, TestStartAndFinish } = require("../model/schoolData")
 
 const handleFetchPInfo = async (req, res) => {
     try {
@@ -42,8 +42,8 @@ const handlePullModuleData = async (req, res) => {
         const information = await Announcements.find()
         const allInformations = [];
         for (const std of studentModules) {
-            const stdId = std.moduleId
-            const findModules = information.find(info => info.moduleId.toString() === stdId.toString())
+            const modId = std.moduleId
+            const findModules = information.find(info => info.moduleId.toString() === modId.toString())
             if (findModules) {
                 for (const inf of information) {
                     const { moduleId } = findModules
@@ -61,46 +61,85 @@ const handlePullModuleData = async (req, res) => {
 const handlePullAssesment = async (req, res) => {
     try {
         const { questionId } = req.params
-        const myAssessment = await AllQuestions.find({ _id: questionId, displayForStudents: true })
+        const myAssessment = await AllQuestions.findOne({ _id: questionId, displayForStudents: true })
         res.json({ myAssessment })
     }
     catch (err) { console.error(err) }
+}
+
+const handleCountdown = async (req, res) => {
+    try {
+        let { assessmentId } = req.params
+        let findAssessment = await AllQuestions.findOne({ _id: assessmentId })
+        let { duration } = findAssessment
+        const countdownInterval = setInterval(() => {
+            duration -= 1
+            if (duration < 1) {
+                res.json({ duration })
+                clearInterval(countdownInterval)
+            }
+        }, 1000);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+const handleStartAndFinish = async (req, res) => {
+    let { id } = req.userId
+    const { beginEnd } = req.params
+
+    if (beginEnd === 'start') {
+        let check = await TestStartAndFinish.findById(id)
+        if (!check) {
+            let startTest = await TestStartAndFinish({ id, start: true, finish: false })
+            startTest.save()
+            res.send('start')
+        }
+    }
+
+    if (beginEnd === 'submit') {
+        let finishTest = await TestStartAndFinish({ id, start: false, finish: true })
+        finishTest.save()
+        await TestStartAndFinish.findByIdAndDelete(id)
+        res.send('submitted')
+    }
+
 }
 
 const handleStudentAnswer = async (req, res) => {
     try {
         const { id } = req.userId;
         const { studentGrade } = req.body;
-        let { modId } = req.params;
 
         const studentDetail = await Students.findById(id);
         const { firstName } = studentDetail;
 
-        const findModuleIdInAllQuestions = await AllQuestions.find({ moduleId: modId });
-        const findModInAllModule = await AllModules.findOne({ moduleId: modId });
-
-        const { moduleName, moduleId, moduleCode } = findModInAllModule;
+        const findAssesment = await AllQuestions.find();
 
         let score = 0;
         let testTitle = ''
         let newAssId = ''
+        let modId = ''
         for (const data of studentGrade) {
             const assessmentId = data.assessmentId;
             const questionId = data.questionId
             const answer = data.answer
-            for (const modul of findModuleIdInAllQuestions) {
-                if (modul._id.toString() == assessmentId.toString()) {
-                    testTitle = modul.testTitle
-                    newAssId = modul._id
-                    for (const quest of modul.allQuestions) {
-                        if (questionId.toString() == quest._id.toString() && quest.answer == answer) {
+            for (const ass of findAssesment) {
+                if (assessmentId.toString() === ass._id.toString()) {
+                    testTitle = ass.testTitle
+                    newAssId = ass._id
+                    modId = ass.moduleId
+                    for (const quest of ass.allQuestions) {
+                        if (questionId.toString() === quest._id.toString() && quest.answer === answer) {
                             score += 1;
                         }
                     }
                 }
-
             }
         }
+
+        const findModInAllModule = await AllModules.findOne({ moduleId: modId });
+        const { moduleName, moduleId, moduleCode } = findModInAllModule;
 
         const newGrade = {
             assesmentTitle: testTitle,
@@ -245,6 +284,7 @@ const handleSavePersonalInfoChanges = async (req, res) => {
 }
 
 module.exports = {
+    handleStartAndFinish,
     handleSavePersonalInfoChanges,
     handlePersonalInfoCancelEdit,
     handleEditPInformation,
@@ -256,5 +296,6 @@ module.exports = {
     handlePullModuleData,
     handleFetchPInfo,
     handleFetchMyModule,
-    handleChosenModule
+    handleChosenModule,
+    handleCountdown
 }
