@@ -10,5 +10,6 @@ const student = require('./routes/studentRoute')
 app.use('/signInReg', signInReg)
 app.use('/tutor', tutor)
 app.use('/student', student)
-app.listen(process.env.PORT, () => {
+const port = process.env.PORT || 9090
+app.listen(port, () => {
 })
