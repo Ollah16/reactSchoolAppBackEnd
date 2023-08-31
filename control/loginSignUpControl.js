@@ -34,7 +34,7 @@ const handleRegistration = async (req, res) => {
     // }
 };
 
-const handleLogin = async (req, res) => {
+const handleLoginFunction = async (req, res) => {
     res.send('success')
     // try {
     //     const { type, email, password } = req.body;
@@ -82,4 +82,4 @@ const handleLogin = async (req, res) => {
     // }
 };
 
-module.exports = { handleRegistration, handleLogin };
+module.exports = { handleRegistration, handleLoginFunction };
