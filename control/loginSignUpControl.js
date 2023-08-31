@@ -34,50 +34,51 @@ const handleRegistration = async (req, res) => {
 };
 
 const handleLogin = async (req, res) => {
-    try {
-        const { type, email, password } = req.body;
+    res.send('success')
+    // try {
+    //     const { type, email, password } = req.body;
 
-        if (type === 'student') {
-            const checkStdEmail = await Students.findOne({ email });
-            if (checkStdEmail) {
-                const checkStdPassword = await bcrypt.compare(password, checkStdEmail.password);
-                if (checkStdPassword) {
-                    const { id } = checkStdEmail;
-                    const accessToken = jwt.sign({ id }, jwtSecretKey);
-                    const { email, firstName, lastName, dob, homeAddress, mobileNumber } = checkStdEmail;
-                    const studentData = { email, firstName, lastName, dob, homeAddress, mobileNumber };
-                    return res.json({ accessToken, studentData });
-                }
-                return res.send('That password is not correct');
-            }
-            return res.send('That email or password is not correct');
-        }
+    //     if (type === 'student') {
+    //         const checkStdEmail = await Students.findOne({ email });
+    //         if (checkStdEmail) {
+    //             const checkStdPassword = await bcrypt.compare(password, checkStdEmail.password);
+    //             if (checkStdPassword) {
+    //                 const { id } = checkStdEmail;
+    //                 const accessToken = jwt.sign({ id }, jwtSecretKey);
+    //                 const { email, firstName, lastName, dob, homeAddress, mobileNumber } = checkStdEmail;
+    //                 const studentData = { email, firstName, lastName, dob, homeAddress, mobileNumber };
+    //                 return res.json({ accessToken, studentData });
+    //             }
+    //             return res.send('That password is not correct');
+    //         }
+    //         return res.send('That email or password is not correct');
+    //     }
 
-        if (type === 'tutor') {
-            const checkTutorEmail = await Tutors.findOne({ email });
-            if (checkTutorEmail) {
-                const checkTutorPassword = await bcrypt.compare(password, checkTutorEmail.password);
-                const { moduleName, moduleCode, _id } = checkTutorEmail;
-                const checkModuleID = await AllModules.findOne({ moduleId: _id });
-                if (!checkModuleID) {
-                    const newModule = await AllModules({ moduleName, moduleCode, moduleId: _id });
-                    await newModule.save();
-                }
-                if (checkTutorPassword) {
-                    const { id } = checkTutorEmail;
-                    const accessToken = jwt.sign({ id }, jwtSecretKey);
-                    const { email, firstName, lastName, dob, homeAddress, mobileNumber, moduleCode, moduleName } = checkTutorEmail;
-                    const tutorData = { email, firstName, lastName, dob, homeAddress, mobileNumber, moduleCode, moduleName };
-                    return res.json({ accessToken, tutorData });
-                }
-                return res.send('That password is not correct');
-            }
-            return res.send('That email or password is not correct');
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
+    //     if (type === 'tutor') {
+    //         const checkTutorEmail = await Tutors.findOne({ email });
+    //         if (checkTutorEmail) {
+    //             const checkTutorPassword = await bcrypt.compare(password, checkTutorEmail.password);
+    //             const { moduleName, moduleCode, _id } = checkTutorEmail;
+    //             const checkModuleID = await AllModules.findOne({ moduleId: _id });
+    //             if (!checkModuleID) {
+    //                 const newModule = await AllModules({ moduleName, moduleCode, moduleId: _id });
+    //                 await newModule.save();
+    //             }
+    //             if (checkTutorPassword) {
+    //                 const { id } = checkTutorEmail;
+    //                 const accessToken = jwt.sign({ id }, jwtSecretKey);
+    //                 const { email, firstName, lastName, dob, homeAddress, mobileNumber, moduleCode, moduleName } = checkTutorEmail;
+    //                 const tutorData = { email, firstName, lastName, dob, homeAddress, mobileNumber, moduleCode, moduleName };
+    //                 return res.json({ accessToken, tutorData });
+    //             }
+    //             return res.send('That password is not correct');
+    //         }
+    //         return res.send('That email or password is not correct');
+    //     }
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send('An error occurred');
+    // }
 };
 
 module.exports = { handleRegistration, handleLogin };
