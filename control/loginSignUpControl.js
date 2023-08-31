@@ -4,33 +4,34 @@ const jwt = require('jsonwebtoken');
 const jwtSecretKey = process.env.JWTSECRETKEY;
 
 const handleRegistration = async (req, res) => {
-    try {
-        const { type, email, password, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit } = req.body;
+    res.send('success')
+    // try {
+    //     const { type, email, password, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit } = req.body;
 
-        const checkStdEmail = await Students.findOne({ email });
-        const checkTutrEmail = await Tutors.findOne({ email });
+    //     const checkStdEmail = await Students.findOne({ email });
+    //     const checkTutrEmail = await Tutors.findOne({ email });
 
-        if (!checkStdEmail && type === 'studentsignup') {
-            const salt = await bcrypt.genSalt();
-            const myPass = await bcrypt.hash(password, salt);
-            const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
-            await newStudent.save();
-            return res.send('registered');
-        }
+    //     if (!checkStdEmail && type === 'studentsignup') {
+    //         const salt = await bcrypt.genSalt();
+    //         const myPass = await bcrypt.hash(password, salt);
+    //         const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
+    //         await newStudent.save();
+    //         return res.send('registered');
+    //     }
 
-        if (!checkTutrEmail && type === 'tutorsignup') {
-            const salt = await bcrypt.genSalt();
-            const myPass = await bcrypt.hash(password, salt);
-            const newTutor = await Tutors({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit });
-            await newTutor.save();
-            return res.send('registered');
-        } else {
-            return res.send('email already exists');
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('An error occurred');
-    }
+    //     if (!checkTutrEmail && type === 'tutorsignup') {
+    //         const salt = await bcrypt.genSalt();
+    //         const myPass = await bcrypt.hash(password, salt);
+    //         const newTutor = await Tutors({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit });
+    //         await newTutor.save();
+    //         return res.send('registered');
+    //     } else {
+    //         return res.send('email already exists');
+    //     }
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send('An error occurred');
+    // }
 };
 
 const handleLogin = async (req, res) => {
