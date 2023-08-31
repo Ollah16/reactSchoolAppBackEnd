@@ -120,15 +120,4 @@ let allQuestionsSchema = new Schema({
 })
 
 let AllQuestions = model('allQuestions', allQuestionsSchema)
-let assessmentSchema = new Schema({
-    studentId: {
-        type: Schema.Types.ObjectId,
-        ref: Tutors
-    },
-    start: Boolean,
-    finish: Boolean,
-})
-
-let TestStartAndFinish = model('testStartFinish', assessmentSchema)
-
-module.exports = { Announcements, AllQuestions, Students, Tutors, AllGrades, AllModules, TestStartAndFinish }
+module.exports = { Announcements, AllQuestions, Students, Tutors, AllGrades, AllModules }
