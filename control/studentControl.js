@@ -84,28 +84,6 @@ const handleCountdown = async (req, res) => {
     }
 }
 
-const handleStartAndFinish = async (req, res) => {
-    let { id } = req.userId
-    const { beginEnd } = req.params
-
-    if (beginEnd === 'start') {
-        let check = await TestStartAndFinish.findById(id)
-        if (!check) {
-            let startTest = await TestStartAndFinish({ id, start: true, finish: false })
-            startTest.save()
-            res.send('start')
-        }
-    }
-
-    if (beginEnd === 'submit') {
-        let finishTest = await TestStartAndFinish({ id, start: false, finish: true })
-        finishTest.save()
-        await TestStartAndFinish.findByIdAndDelete(id)
-        res.send('submitted')
-    }
-
-}
-
 const handleStudentAnswer = async (req, res) => {
     try {
         const { id } = req.userId;
@@ -284,7 +262,6 @@ const handleSavePersonalInfoChanges = async (req, res) => {
 }
 
 module.exports = {
-    handleStartAndFinish,
     handleSavePersonalInfoChanges,
     handlePersonalInfoCancelEdit,
     handleEditPInformation,

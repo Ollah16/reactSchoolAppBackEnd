@@ -25,5 +25,4 @@ router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPInformation)
 router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
 router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
 router.get('/countdown/:assessmentId', handleCountdown)
-router.get('/startandsubmit/:beginEnd', jwtMiddleWare, handleStartAndFinish)
 module.exports = router
