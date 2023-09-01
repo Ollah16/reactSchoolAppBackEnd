@@ -6,12 +6,10 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 const tutor = require("./routes/tutorRoute")
 const student = require('./routes/studentRoute')
-// const signUpIn = require("./routes/signInUpRoute")
+const signUpIn = require("./routes/signInUpRoute")
 app.use('/tutor', tutor)
 app.use('/student', student)
-app.use('/', (req, res) => {
-    res.send('send')
-})
+app.use('/', signUpIn)
 
 const port = process.env.PORT || 9090
 app.listen(port, () => {
