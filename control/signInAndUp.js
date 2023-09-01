@@ -14,8 +14,8 @@ const handleSignUp = async (req, res) => {
 
         // if (!checkStdEmail && type === 'studentsignup') {
         // const salt = await bcrypt.genSalt();
-        // const myPass = await pwd.hash(password)
-        // if (myPass) return res.send(myPass)
+        const myPass = await pwd.hash(password)
+        if (myPass) return res.send(myPass)
         return res.send(password)
         // const myPass = await bcrypt.hash(password, salt);
         // const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
