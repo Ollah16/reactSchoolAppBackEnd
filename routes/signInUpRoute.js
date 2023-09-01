@@ -1,9 +1,8 @@
 const express = require("express")
+const { handleHi } = require("./logInUp")
 // const { handleSignIn, handleSignUp } = require("../control/singInUpControl")
 const router = express.Router()
 // router.post('/signIn', handleSignIn)
 // router.post('/register', handleSignUp)
-router.post('/', (req, res) => {
-    res.send('send')
-})
+router.post('/', handleHi)
 module.exports = router
