@@ -1,5 +1,7 @@
 const { Students, Tutors, AllModules } = require('../model/schoolData');
 // const bcrypt = require('bcrypt');
+const securepassword = require('secure-password')
+const pwd = securepassword()
 const jwt = require('jsonwebtoken');
 const jwtSecretKey = process.env.JWTSECRETKEY;
 
@@ -12,7 +14,7 @@ const handleSignUp = async (req, res) => {
 
         if (!checkStdEmail && type === 'studentsignup') {
             // const salt = await bcrypt.genSalt();
-            // const myPass = await pwd.hash(password)
+            const myPass = await pwd.hash(password)
 
             // const myPass = await bcrypt.hash(password, salt);
             const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
@@ -21,7 +23,7 @@ const handleSignUp = async (req, res) => {
         }
         if (!checkTutrEmail && type === 'tutorsignup') {
             // const salt = await bcrypt.genSalt();
-            // const myPass = await pwd.hash(password)
+            const myPass = await pwd.hash(password)
             const newTutor = await Tutors({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit });
             await newTutor.save();
             return res.send('registered');
@@ -41,7 +43,7 @@ const handleSignIn = async (req, res) => {
         if (type === 'student') {
             const checkStdEmail = await Students.findOne({ email });
             if (checkStdEmail) {
-                // const checkStdPassword = await pwd.verify(password, checkStdEmail.password)
+                const checkStdPassword = await pwd.verify(password, checkStdEmail.password)
                 // const checkStdPassword = await bcrypt.compare(password, checkStdEmail.password);
 
                 if (checkStdPassword) {
@@ -59,9 +61,7 @@ const handleSignIn = async (req, res) => {
         if (type === 'tutor') {
             const checkTutorEmail = await Tutors.findOne({ email });
             if (checkTutorEmail) {
-                // const checkTutorPassword = await argon2.verify(checkStdEmail.password, password)
-
-                // const checkTutorPassword = await pwd.verify(password, checkTutorEmail.password)
+                const checkTutorPassword = await pwd.verify(password, checkTutorEmail.password)
                 const { moduleName, moduleCode, _id } = checkTutorEmail;
                 const checkModuleID = await AllModules.findOne({ moduleId: _id });
                 if (!checkModuleID) {
