@@ -3,7 +3,7 @@ const express = require("express")
 const router = express.Router()
 // router.post('/signIn', handleSignIn)
 // router.post('/register', handleSignUp)
-router.post('/logg', (req, res) => {
+router.post('/', (req, res) => {
     res.send('success')
 })
 module.exports = router
