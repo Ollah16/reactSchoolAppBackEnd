@@ -6,7 +6,6 @@ const jwtSecretKey = process.env.JWTSECRETKEY;
 const pwd = securePassword()
 
 const handleSignUp = async (req, res) => {
-    res.send('success')
     try {
         const { type, email, password, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit } = req.body;
 
