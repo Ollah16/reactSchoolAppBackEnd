@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtSecretKey = process.env.JWTSECRETKEY;
 
-const handleRegistration = async (req, res) => {
+const handleSignUp = async (req, res) => {
     res.send('success')
     // try {
     //     const { type, email, password, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit } = req.body;
@@ -34,7 +34,7 @@ const handleRegistration = async (req, res) => {
     // }
 };
 
-const handleLoginFunction = async (req, res) => {
+const handleSignIn = async (req, res) => {
     res.send('success')
     // try {
     //     const { type, email, password } = req.body;
@@ -82,4 +82,4 @@ const handleLoginFunction = async (req, res) => {
     // }
 };
 
-module.exports = { handleRegistration, handleLoginFunction };
+module.exports = { handleSignUp, handleSignIn };
