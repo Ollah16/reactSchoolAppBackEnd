@@ -1,4 +1,4 @@
-// const { Students, Tutors, AllModules } = require('../model/schoolData');
+const { Students, Tutors, AllModules } = require('../model/schoolData');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtSecretKey = process.env.JWTSECRETKEY;
