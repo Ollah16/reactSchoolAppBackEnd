@@ -44,7 +44,6 @@ const handleSignIn = async (req, res) => {
             const checkStdEmail = await Students.findOne({ email });
             if (checkStdEmail) {
                 const checkStdPassword = await pwd.verify(password, checkStdEmail.password)
-                // const checkStdPassword = await bcrypt.compare(password, checkStdEmail.password);
 
                 if (checkStdPassword) {
                     const { id } = checkStdEmail;
