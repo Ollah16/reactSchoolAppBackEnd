@@ -10,6 +10,9 @@ const student = require("./routes/studentRoute")
 app.use('/signinup', regLog)
 app.use('/tutor', tutor)
 app.use('/student', student)
+app.use('/', (req, res) => {
+    res.send('hi')
+})
 const port = process.env.PORT || 9090
 app.listen(port, () => {
 })
