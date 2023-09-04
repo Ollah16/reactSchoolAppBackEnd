@@ -1,5 +1,5 @@
 const { Students, Tutors, AllModules } = require('../model/schoolData');
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const securepassword = require('secure-password')
 const pwd = securepassword()
 const jwt = require('jsonwebtoken');
@@ -12,25 +12,22 @@ const handleSignUp = async (req, res) => {
         const checkStdEmail = await Students.findOne({ email });
         const checkTutrEmail = await Tutors.findOne({ email });
 
-        // if (!checkStdEmail && type === 'studentsignup') {
-        // const salt = await bcrypt.genSalt();
-        const myPass = await pwd.hash(password)
-        if (myPass) return res.send(myPass)
-        return res.send(password)
-        // const myPass = await bcrypt.hash(password, salt);
-        // const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
-        // await newStudent.save();
-        // return res.send('registered');
-        // }
-        // if (!checkTutrEmail && type === 'tutorsignup') {
-        //     // const salt = await bcrypt.genSalt();
-        //     const myPass = await pwd.hash(password)
-        //     const newTutor = await Tutors({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit });
-        //     await newTutor.save();
-        //     return res.send('registered');
-        // } else {
-        //     return res.send('email already exists');
-        // }
+        if (!checkStdEmail && type === 'studentsignup') {
+            const salt = await bcrypt.genSaltSync(10);
+            const myPass = await bcrypt.hashSync(password, salt);
+            const newStudent = await Students({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
+            await newStudent.save();
+            return res.send('registered');
+        }
+        if (!checkTutrEmail && type === 'tutorsignup') {
+            const salt = await bcrypt.genSaltSync(10);
+            const myPass = await bcrypt.hashSync(password, salt);
+            const newTutor = await Tutors({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit });
+            await newTutor.save();
+            return res.send('registered');
+        } else {
+            return res.send('email already exists');
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -43,9 +40,7 @@ const handleSignIn = async (req, res) => {
         if (type === 'student') {
             const checkStdEmail = await Students.findOne({ email });
             if (checkStdEmail) {
-                const checkStdPassword = await pwd.verify(password, checkStdEmail.password)
-                // const checkStdPassword = await bcrypt.compare(password, checkStdEmail.password);
-
+                const checkStdPassword = await bcrypt.compareSync(password, checkStdEmail.password);
                 if (checkStdPassword) {
                     const { id } = checkStdEmail;
                     const accessToken = jwt.sign({ id }, jwtSecretKey);
@@ -61,7 +56,7 @@ const handleSignIn = async (req, res) => {
         if (type === 'tutor') {
             const checkTutorEmail = await Tutors.findOne({ email });
             if (checkTutorEmail) {
-                const checkTutorPassword = await pwd.verify(password, checkTutorEmail.password)
+                const checkTutorPassword = await bcrypt.compareSync(password, checkTutorEmail.password)
                 const { moduleName, moduleCode, _id } = checkTutorEmail;
                 const checkModuleID = await AllModules.findOne({ moduleId: _id });
                 if (!checkModuleID) {
