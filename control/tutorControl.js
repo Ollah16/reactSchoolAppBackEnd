@@ -43,8 +43,8 @@ const handleEditQuestion = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        const foundTutor = await AllQuestions.findOne({ moduleId: id })
-        const updatedQuestions = await AllQuestions.updateMany(
+        await AllQuestions.findOne({ moduleId: id })
+        await AllQuestions.updateMany(
             { moduleId: id, "allQuestions._id": questionId },
             { $set: { "allQuestions.$.edit": true } }
         );
@@ -57,8 +57,8 @@ const handleCancelChanges = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        const foundTutor = await AllQuestions.findOne({ moduleId: id })
-        const updatedQuestions = await AllQuestions.updateMany(
+        await AllQuestions.findOne({ moduleId: id })
+        await AllQuestions.updateMany(
             { moduleId: id, "allQuestions._id": questionId },
             { $set: { "allQuestions.$.edit": false } }
         );
@@ -125,7 +125,7 @@ const handleEditInformation = async (req, res) => {
     try {
         const { id } = req.userId
         const { infoId } = req.params
-        const findInformation = await Announcements.findByIdAndUpdate(infoId, { edit: true })
+        await Announcements.findByIdAndUpdate(infoId, { edit: true })
         const allInformations = await Announcements.find({ moduleId: id })
         res.json({ allInformations })
     } catch (err) { console.error(err) }
@@ -135,7 +135,7 @@ const handleCancelEdit = async (req, res) => {
     try {
         const { id } = req.userId
         const { infoId } = req.params
-        const findInformation = await Announcements.findByIdAndUpdate(infoId, { edit: false })
+        await Announcements.findByIdAndUpdate(infoId, { edit: false })
         const allInformations = await Announcements.find({ moduleId: id })
         res.json({ allInformations })
     } catch (err) { console.error(err) }
@@ -167,9 +167,9 @@ const handleShowInformation = async (req, res) => {
         const { id } = req.userId
         const { infoId } = req.params
         const findInfoById = await Announcements.findById(infoId)
-        const { showInformation } = findInfoById
-        showInformation = !showInformation ? true : false
-        const findInformation = await Announcements.findByIdAndUpdate(infoId, { showInformation: showInformation })
+        let { showInformation } = findInfoById
+        showInformation = showInformation ? false : true
+        await Announcements.findByIdAndUpdate(infoId, { showInformation: showInformation })
         const allInformations = await Announcements.find({ moduleId: id })
         res.json({ allInformations })
     }
