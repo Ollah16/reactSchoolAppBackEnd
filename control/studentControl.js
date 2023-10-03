@@ -188,7 +188,9 @@ const handleFetchInformations = async (req, res) => {
                 for (const info of information) {
                     const { moduleId } = findModules
                     if (info.moduleId.toString() === moduleId.toString() && info.displayForStudents) {
-                        allInformations.push({ title: info.title, information: info.information })
+                        let findModuleName = await AllModules.findOne({ moduleId })
+                        let { moduleName } = findModuleName
+                        allInformations.push({ title: info.title, information: info.information, moduleName })
                     }
                 }
             }

@@ -162,20 +162,6 @@ const handleDeleteInfo = async (req, res) => {
     } catch (err) { console.error(err) }
 }
 
-const handleShowInformation = async (req, res) => {
-    try {
-        const { id } = req.userId
-        const { infoId } = req.params
-        const findInfoById = await Announcements.findById(infoId)
-        let { showInformation } = findInfoById
-        showInformation = showInformation ? false : true
-        await Announcements.findByIdAndUpdate(infoId, { showInformation: showInformation })
-        const allInformations = await Announcements.find({ moduleId: id })
-        res.json({ allInformations })
-    }
-    catch (err) { console.error(err) }
-}
-
 const handleFetchPInfo = async (req, res) => {
     try {
         const { id } = req.userId
