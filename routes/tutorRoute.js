@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const { handleFetchQuestions, handleAddQuestions, handleDisplayQuestion, handleEditQuestion, handleCancelChanges, handleDeleteQuestion, handleChanges, handleAddInformations, handleFetchInformations, handleShowInformation, handleEditInformation, handleCancelEdit, handleSaveAnnouncementChanges, handleDeleteInfo, handleFetchPInfo, handleAllResult, handleEditPersonalInformation, handlePersonalInfoCancelEdit, handleSavePersonalInfoChanges, handleShowResults, handleDisplayResults, handleDisplayInfo, handleDisplayAssesment } = require('../control/tutorControl')
+const { handleFetchQuestions, handleAddQuestions, handleEditQuestion, handleCancelChanges, handleDeleteQuestion, handleChanges, handleAddInformations, handleFetchInformations, handleEditInformation, handleCancelEdit, handleSaveAnnouncementChanges, handleDeleteInfo, handleFetchPInfo, handleAllResult, handleEditPersonalInformation, handlePersonalInfoCancelEdit, handleSavePersonalInfoChanges, handleDisplayResults, handleDisplayInfo, handleDisplayAssesment } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
     let { authorization } = req.headers

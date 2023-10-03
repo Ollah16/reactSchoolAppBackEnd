@@ -1,5 +1,5 @@
 const express = require('express')
-const { handleFetchPInfo, handleFetchMyModule, handleChosenModule, handlePullModuleData, handlePullAssesment, handleStudentAnswer, handleCheckStudentAttempt, handleFetchInformations, handleFetchResult, handleEditPInformation, handlePersonalInfoCancelEdit, handleSavePersonalInfoChanges, handleCountdown, handleStartAndFinish } = require('../control/studentControl')
+const { handleFetchPInfo, handleFetchMyModule, handleChosenModule, handlePullModuleData, handlePullAssesment, handleStudentAnswer, handleCheckStudentAttempt, handleFetchInformations, handleFetchResult, handleEditPInformation, handlePersonalInfoCancelEdit, handleSavePersonalInfoChanges, handleCountdown } = require('../control/studentControl')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 
