@@ -289,7 +289,6 @@ module.exports = {
     handleChanges,
     handleFetchQuestions,
     handleAddQuestions,
-    handleDisplayQuestion,
     handleEditQuestion,
     handleCancelChanges,
     handleDeleteQuestion
