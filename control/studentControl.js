@@ -26,8 +26,8 @@ const handleFetchMyModule = async (req, res) => {
         const findStudent = await Students.findById(id)
         const allModules = await AllModules.find()
         const { studentModules } = findStudent
-        if (studentModules.length > 0) return res.json({ allMyModules: studentModules })
-        if (studentModules.length <= 0) return res.json({ allModules })
+        if (studentModules.length) return res.json({ allMyModules: studentModules })
+        if (!studentModules.length) return res.json({ allModules })
     }
     catch (err) { console.error(err) }
 }
