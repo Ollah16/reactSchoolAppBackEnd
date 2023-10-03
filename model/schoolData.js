@@ -54,7 +54,6 @@ let announcementSchema = new Schema({
     information: String,
     title: String,
     displayForStudents: Boolean,
-    showInformation: Boolean,
     edit: Boolean,
     moduleId: {
         type: Schema.Types.ObjectId,
@@ -70,7 +69,6 @@ let gradesSchema = new Schema({
     },
     assesmentTitle: String,
     displayGrade: Boolean,
-    showResults: Boolean,
     moduleId: {
         type: Schema.Types.ObjectId,
         ref: Students
@@ -101,7 +99,6 @@ let AllModules = model('allModules', moduleSchema)
 
 let allQuestionsSchema = new Schema({
     testTitle: String,
-    showQuestion: Boolean,
     displayForStudents: Boolean,
     allQuestions: [{
         question: String,

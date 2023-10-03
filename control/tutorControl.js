@@ -13,31 +13,31 @@ const handleFetchQuestions = async (req, res) => {
 const handleAddQuestions = async (req, res) => {
     try {
         const { id } = req.userId
-        const { testTitle, showQuestion, allQuestions, duration, displayForStudents } = req.body
-        const newQuestion = { testTitle, showQuestion, displayForStudents, allQuestions, moduleId: id, duration }
+        const { testTitle, allQuestions, duration, displayForStudents } = req.body
+        const newQuestion = { testTitle, displayForStudents, allQuestions, moduleId: id, duration }
         const addNewQuestion = await AllQuestions(newQuestion)
         addNewQuestion.save()
     } catch (err) { console.error(err) }
 }
 
-const handleDisplayQuestion = async (req, res) => {
-    try {
-        const { id } = req.userId;
-        const { questionId } = req.params;
+// const handleDisplayQuestion = async (req, res) => {
+//     try {
+//         const { id } = req.userId;
+//         const { questionId } = req.params;
 
-        const findTutorQuestion = await AllQuestions.findById(questionId);
-        const showQuestion = !findTutorQuestion?.showQuestion || false;
+//         const findTutorQuestion = await AllQuestions.findById(questionId);
+//         const showQuestion = !findTutorQuestion?.showQuestion || false;
 
-        await AllQuestions.findByIdAndUpdate(questionId, { showQuestion });
+//         await AllQuestions.findByIdAndUpdate(questionId, { showQuestion });
 
-        const allQuestions = await AllQuestions.find({ moduleId: id });
+//         const allQuestions = await AllQuestions.find({ moduleId: id });
 
-        res.status(200).json({ allQuestions });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
+//         res.status(200).json({ allQuestions });
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
 
 const handleEditQuestion = async (req, res) => {
     try {
@@ -104,8 +104,8 @@ const handleChanges = async (req, res) => {
 const handleAddInformations = async (req, res) => {
     try {
         const { id } = req.userId
-        const { information, title, displayForStudents, showInformation, edit } = req.body
-        const freshInformation = { information, title, displayForStudents, showInformation, edit, moduleId: id }
+        const { information, title, displayForStudents, edit } = req.body
+        const freshInformation = { information, title, displayForStudents, edit, moduleId: id }
         const newInfo = await Announcements(freshInformation)
         newInfo.save()
     }
@@ -229,26 +229,6 @@ const handleDisplayResults = async (req, res) => {
     }
 }
 
-const handleShowResults = async (req, res) => {
-    try {
-        const { id } = req.userId;
-        const { assesmentId } = req.params;
-        let showRes = ''
-        let allMyResults = await AllGrades.find({ moduleId: id });
-        for (const result of allMyResults) {
-            if (result.assesmentId.toString() === assesmentId.toString()) {
-                showRes = !result.showResults
-                await AllGrades.findOneAndUpdate({ assesmentId }, { showResults: showRes });
-            }
-        }
-        allMyResults = await AllGrades.find({ moduleId: id });
-        res.status(200).json({ allMyResults });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
-
 const handleDisplayInfo = async (req, res) => {
     try {
         const { id } = req.userId;
@@ -294,7 +274,6 @@ const handleDisplayAssesment = async (req, res) => {
 module.exports = {
     handleDisplayAssesment,
     handleDisplayInfo,
-    handleShowResults,
     handleDisplayResults,
     handleEditPersonalInformation,
     handleSavePersonalInfoChanges,
@@ -305,7 +284,6 @@ module.exports = {
     handleCancelEdit,
     handleSaveAnnouncementChanges,
     handleDeleteInfo,
-    handleShowInformation,
     handleFetchInformations,
     handleAddInformations,
     handleChanges,
