@@ -32,8 +32,8 @@ exports.handleTutorRegistration = async (req, res) => {
             const salt = await bcrypt.genSaltSync(10);
             const hashedPassword = await bcrypt.hashSync(password, salt);
             const newTutor = await Tutor({ email, password: hashedPassword, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit: false });
-            const newModule = await Module({ moduleName, moduleCode })
-            await newTutor.save();
+            const savedTutor = await newTutor.save();
+            const newModule = await Module({ moduleName, moduleCode, tutorId: savedTutor._id })
             await newModule.save()
 
             return res.json({ message: 'Registration Successful' });

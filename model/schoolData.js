@@ -71,7 +71,7 @@ let Grade = model('grade', gradesSchema)
 let moduleSchema = new Schema({
     moduleName: String,
     moduleCode: Number,
-    moduleId: {
+    tutorId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
