@@ -6,10 +6,12 @@ const {
     getQuestions,
     editQuestion,
     saveChanges,
-    cancelChanges,
     deleteQuestion,
     sendAssesment,
     addQuestions,
+    handleCancelChanges,
+    cancelChanges,
+    deleteAssessment,
 } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
@@ -28,8 +30,15 @@ router.post('/addQuestions', jwtMiddleWare, addQuestions)
 router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
 router.post('/saveChanges/:questionId', jwtMiddleWare, saveChanges)
 router.patch('/cancelChanges/:questionId', jwtMiddleWare, cancelChanges)
-router.delete('/deleteAssesment/:assesmentId', jwtMiddleWare, deleteQuestion)
-router.patch('/sendAssesment/:assesmentId', jwtMiddleWare, sendAssesment)
+router.delete('/deleteQuestion/:questionId', jwtMiddleWare, deleteQuestion)
+router.patch('/sendAssessment/:assessmentId', sendAssesment)
+router.delete('/deleteAssessment/:assessmentId', deleteAssessment)
+
+
+// router.patch('/cancelChanges/:questionId', jwtMiddleWare, (req, res) => {
+//     console.log('hi')
+// })
+
 
 // router.post('/addInformation', jwtMiddleWare, handleAddInformations)
 // router.get('/getAllInformations', jwtMiddleWare, handleFetchInformations)
