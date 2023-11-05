@@ -78,7 +78,7 @@ exports.cancelChanges = async (req, res) => {
         const { id } = req.userId
         const { questionId } = req.params
         await AllQuestions.findOne({ moduleId: id })
-        await Assesment.findOneAndUpdate(
+        await Assesment.updateOne(
             { tutorId: id, "allQuestions._id": questionId },
             { $set: { "allQuestions.$.edit": false } }
         );
