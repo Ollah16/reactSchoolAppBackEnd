@@ -1,10 +1,10 @@
-const { AllQuestions, Tutors, Announcements, AllGrades, Tutor } = require('../model/schoolData')
+const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module } = require('../model/schoolData')
 
-exports.getPersonalInfo = async (req, res) => {
+exports.getModuleInfo = async (req, res) => {
     try {
         const { id } = req.userId
-        const personalInformation = await Tutor.findById(id)
-        res.json({ personalInformation })
+        const moduleInformation = await Module.findById(id)
+        res.json({ moduleInformation })
     }
     catch (err) { console.error(err) }
 }

@@ -1,28 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const {
-    // handleFetchQuestions,
-    // handleAddQuestions,
-    // handleEditQuestion,
-    // handleCancelChanges,
-    // handleDeleteQuestion,
-    // handleChanges,
-    // handleAddInformations,
-    // handleFetchInformations,
-    // handleEditInformation,
-    // handleCancelEdit,
-    // handleSaveAnnouncementChanges,
-    // handleDeleteInfo,
-    // handleAllResult,
-    // handleEditPersonalInformation,
-    // handlePersonalInfoCancelEdit,
-    // handleSavePersonalInfoChanges,
-    // handleDisplayResults,
-    // handleDisplayInfo,
-    // handleDisplayAssesment,
-    // handlePersonalInfo,
-    getPersonalInfo } = require('../control/tutorControl')
+const { getModuleInfo } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
     let { authorization } = req.headers
@@ -34,7 +13,7 @@ const jwtMiddleWare = async (req, res, next) => {
     }
 }
 
-router.get('/personalInformation', jwtMiddleWare, getPersonalInfo)
+router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
 
 // router.get('/fecthQuestions', jwtMiddleWare, handleFetchQuestions)
 // router.post('/addquestion', jwtMiddleWare, handleAddQuestions)
