@@ -35,7 +35,7 @@ let Student = model("student", studentSchema)
 let informationSchema = new Schema({
     information: String,
     title: String,
-    sendAssesment: Boolean,
+    sendInformation: Boolean,
     edit: Boolean,
     tutorId: {
         type: Schema.Types.ObjectId,
