@@ -108,7 +108,7 @@ let questionsSchema = new Schema({
     }],
     moduleId: {
         type: Schema.Types.ObjectId,
-        ref: Students
+        ref: Student
     },
     duration: Number
 })

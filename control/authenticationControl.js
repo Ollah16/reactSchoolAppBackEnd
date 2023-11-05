@@ -6,23 +6,22 @@ const { Student, Tutor, Module } = require('../model/schoolData');
 const jwtSecretKey = process.env.JWTSECRETKEY;
 
 exports.handleStudentRegistration = async (req, res) => {
-    res.send('hi')
-    // try {
-    //     const { email, password, firstName, lastName, dob, homeAddress, mobileNumber } = req.body;
-    //     const checkStdEmail = await Students.findOne({ email });
-    //     if (!checkStdEmail) {
-    //         const salt = await bcrypt.genSaltSync(10);
-    //         const myPass = await bcrypt.hashSync(password, salt);
-    //         const newStudent = await Student({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
-    //         await newStudent.save();
-    //         return res.json({ message: 'Registration Successful' });
-    //     } else {
-    //         return res.json({ message: 'Email already exists' });
-    //     }
-    // } catch (err) {
-    //     console.error(err);
-    //     res.status(500).send('An error occurred');
-    // }
+    try {
+        const { email, password, firstName, lastName, dob, homeAddress, mobileNumber } = req.body;
+        const checkStdEmail = await Student.findOne({ email });
+        if (!checkStdEmail) {
+            const salt = await bcrypt.genSaltSync(10);
+            const myPass = await bcrypt.hashSync(password, salt);
+            const newStudent = await Student({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
+            await newStudent.save();
+            return res.json({ message: 'Registration Successful' });
+        } else {
+            return res.json({ message: 'Email already exists' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 }
 
 exports.handleTutorRegistration = async (req, res) => {
