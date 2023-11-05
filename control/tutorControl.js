@@ -46,22 +46,27 @@ exports.saveChanges = async (req, res) => {
         const { questionId } = req.params;
         const { question, optionA, optionB, optionC, optionD, answer } = req.body;
 
-        const assessment = await Assesment.findOne({ tutorId: id })
-        const { allQuestions } = assessment
-        const updateChanges = allQuestions.map((questions, i) =>
-            questionId == questions._id ? ({
-                ...questions,
-                question,
-                optionA,
-                optionB,
-                optionC,
-                optionD,
-                answer
-            }) : questions)
+        const assessment = await Assesment.findOne({ tutorId: id });
 
-        await Assesment.findOneAndUpdate({ tutorId: id },
-            { allQuestions: updateChanges }
-        );
+
+        const { allQuestions } = assessment;
+
+        const updatedQuestions = allQuestions.map((questions) => {
+            if (question._id == questionId) {
+                return {
+                    ...questions,
+                    question,
+                    optionA,
+                    optionB,
+                    optionC,
+                    optionD,
+                    answer
+                };
+            }
+            return question;
+        });
+
+        await Assesment.findOneAndUpdate({ tutorId: id }, { allQuestions: updatedQuestions });
 
     } catch (err) {
         console.error(err);
@@ -70,24 +75,30 @@ exports.saveChanges = async (req, res) => {
 };
 
 
+
 exports.cancelChanges = async (req, res) => {
     try {
-        const { id } = req.userId
-        const { questionId } = req.params
-        const assessment = await Assesment.findOne({ tutorId: id })
-        const { allQuestions } = assessment
-        const updateChanges = allQuestions.map((questions, i) =>
-            questionId === questions._id ? ({
-                ...questions,
-                edit: false
-            }) : questions)
+        const { id } = req.userId;
+        const { questionId } = req.params;
 
-        await Assesment.findOneAndUpdate({ tutorId: id },
-            { allQuestions: updateChanges }
-        );
+        const assessment = await Assesment.findOne({ tutorId: id });
+
+        const { allQuestions } = assessment;
+
+        const updatedQuestions = allQuestions.map((question) => {
+            if (question._id === questionId) {
+                return { ...question, edit: false };
+            }
+            return question;
+        });
+
+        await Assesment.findOneAndUpdate({ tutorId: id }, { allQuestions: updatedQuestions });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
     }
-    catch (err) { console.error(err) }
-}
+};
+
 
 exports.deleteQuestion = async (req, res) => {
     try {
