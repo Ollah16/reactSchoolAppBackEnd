@@ -11,8 +11,8 @@ exports.handleStudentRegistration = async (req, res) => {
         const checkStdEmail = await Student.findOne({ email });
         if (!checkStdEmail) {
             const salt = await bcrypt.genSaltSync(10);
-            const myPass = await bcrypt.hashSync(password, salt);
-            const newStudent = await Student({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
+            const hashedPassword = await bcrypt.hashSync(password, salt);
+            const newStudent = await Student({ email, password: hashedPassword, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
             await newStudent.save();
             return res.json({ message: 'Registration Successful' });
         } else {
@@ -27,11 +27,11 @@ exports.handleStudentRegistration = async (req, res) => {
 exports.handleTutorRegistration = async (req, res) => {
     try {
         const { email, password, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode } = req.body;
-        const checkTutrEmail = await Tutors.findOne({ email });
-        if (!checkTutrEmail && type === 'tutorsignup') {
+        const userEmail = await Tutor.findOne({ email });
+        if (!userEmail) {
             const salt = await bcrypt.genSaltSync(10);
-            const myPass = await bcrypt.hashSync(password, salt);
-            const newTutor = await Tutor({ email, password: myPass, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit: false });
+            const hashedPassword = await bcrypt.hashSync(password, salt);
+            const newTutor = await Tutor({ email, password: hashedPassword, firstName, lastName, dob, homeAddress, mobileNumber, moduleName, moduleCode, edit: false });
             const newModule = await Module({ moduleName, moduleCode })
             await newTutor.save();
             await newModule.save()
