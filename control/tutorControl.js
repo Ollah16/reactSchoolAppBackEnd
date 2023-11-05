@@ -46,19 +46,21 @@ exports.saveChanges = async (req, res) => {
         const { questionId } = req.params;
         const { question, optionA, optionB, optionC, optionD, answer } = req.body;
 
-        const updatedQuestion = {
-            'allQuestions.$.edit': false,
-            'allQuestions.$.question': question,
-            'allQuestions.$.optionA': optionA,
-            'allQuestions.$.optionB': optionB,
-            'allQuestions.$.optionC': optionC,
-            'allQuestions.$.optionD': optionD,
-            'allQuestions.$.answer': answer
-        };
+        const assessment = await Assesment.findOne({ tutorId: id })
+        const { allQuestions } = assessment
+        const updateChanges = allQuestions.map((questions, i) =>
+            questionId == questions._id ? ({
+                ...questions,
+                question,
+                optionA,
+                optionB,
+                optionC,
+                optionD,
+                answer
+            }) : questions)
 
-        await Assesment.updateOne(
-            { tutorId: id, "allQuestions._id": questionId },
-            { $set: updatedQuestion }
+        await Assesment.findOneAndUpdate({ tutorId: id },
+            { allQuestions: updateChanges }
         );
 
     } catch (err) {
@@ -72,9 +74,16 @@ exports.cancelChanges = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        await Assesment.updateOne(
-            { tutorId: id, "allQuestions._id": questionId },
-            { $set: { "allQuestions.$.edit": false } }
+        const assessment = await Assesment.findOne({ tutorId: id })
+        const { allQuestions } = assessment
+        const updateChanges = allQuestions.map((questions, i) =>
+            questionId === questions._id ? ({
+                ...questions,
+                edit: false
+            }) : questions)
+
+        await Assesment.findOneAndUpdate({ tutorId: id },
+            { allQuestions: updateChanges }
         );
     }
     catch (err) { console.error(err) }
