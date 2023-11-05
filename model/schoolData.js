@@ -17,7 +17,7 @@ let tutorSchema = new Schema({
     edit: Boolean,
     mobileNumber: Number
 })
-let Tutors = model("allTutors", tutorSchema)
+let Tutor = model("tutor", tutorSchema)
 
 let studentSchema = new Schema({
     email: String,
@@ -27,28 +27,10 @@ let studentSchema = new Schema({
     dob: String,
     homeAddress: String,
     mobileNumber: Number,
-    edit: Boolean,
-    studentGrades: [{
-        assesmentTitle: String,
-        moduleName: String,
-        moduleCode: Number,
-        grade: Number,
-        assesmentId: {
-            type: Schema.Types.ObjectId,
-            ref: Tutors
-        }
-    }],
-    studentModules: [{
-        moduleName: String,
-        moduleCode: Number,
-        moduleId: {
-            type: Schema.Types.ObjectId,
-            ref: Tutors
-        }
-    }]
+    edit: Boolean
 })
 
-let Students = model("allStudents", studentSchema)
+let Student = model("student", studentSchema)
 
 let announcementSchema = new Schema({
     information: String,
@@ -57,21 +39,21 @@ let announcementSchema = new Schema({
     edit: Boolean,
     moduleId: {
         type: Schema.Types.ObjectId,
-        ref: Students
+        ref: Student
     }
 })
-let Announcements = model("announcements", announcementSchema)
+let Announcement = model("announcement", announcementSchema)
 
 let gradesSchema = new Schema({
     assesmentId: {
         type: Schema.Types.ObjectId,
-        ref: Students
+        ref: Student
     },
     assesmentTitle: String,
     displayGrade: Boolean,
     moduleId: {
         type: Schema.Types.ObjectId,
-        ref: Students
+        ref: Student
     },
     grades: [{
         moduleName: String,
@@ -80,24 +62,39 @@ let gradesSchema = new Schema({
         studentName: String,
         studentId: {
             type: Schema.Types.ObjectId,
-            ref: Students
+            ref: Student
         }
     }]
 })
-let AllGrades = model('allGrades', gradesSchema)
+let Grade = model('grade', gradesSchema)
 
 let moduleSchema = new Schema({
     moduleName: String,
     moduleCode: Number,
     moduleId: {
         type: Schema.Types.ObjectId,
-        ref: Students
+        ref: Student
     },
 })
 
-let AllModules = model('allModules', moduleSchema)
+let Module = model('module', moduleSchema)
 
-let allQuestionsSchema = new Schema({
+let studentModuleSchema = new Schema({
+    moduleName: String,
+    moduleCode: Number,
+    moduleId: {
+        type: Schema.Types.ObjectId,
+        ref: Student
+    },
+    studentId: {
+        type: Schema.Types.ObjectId,
+        ref: Student
+    },
+})
+
+let StudentModule = model('studentmodule', studentModuleSchema)
+
+let questionsSchema = new Schema({
     testTitle: String,
     displayForStudents: Boolean,
     allQuestions: [{
@@ -116,5 +113,5 @@ let allQuestionsSchema = new Schema({
     duration: Number
 })
 
-let AllQuestions = model('allQuestions', allQuestionsSchema)
-module.exports = { Announcements, AllQuestions, Students, Tutors, AllGrades, AllModules }
+let Question = model('question', questionsSchema)
+module.exports = { Question, Module, Grade, Announcement, Student, Tutor, StudentModule }
