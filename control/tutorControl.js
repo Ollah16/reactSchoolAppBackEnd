@@ -52,7 +52,7 @@ exports.saveChanges = async (req, res) => {
         const { allQuestions } = assessment;
 
         const updatedQuestions = allQuestions.map((questions) => {
-            if (question._id == questionId) {
+            if (questions._id == questionId) {
                 return {
                     ...questions,
                     question,
@@ -63,7 +63,7 @@ exports.saveChanges = async (req, res) => {
                     answer
                 };
             }
-            return question;
+            return questions;
         });
 
         await Assesment.findOneAndUpdate({ tutorId: id }, { allQuestions: updatedQuestions });
