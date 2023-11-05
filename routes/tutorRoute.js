@@ -4,17 +4,16 @@ const jwt = require('jsonwebtoken')
 const {
     getModuleInfo,
     getQuestions,
-    AddQuestions,
     editQuestion,
     saveChanges,
     cancelChanges,
     deleteQuestion,
     sendAssesment,
+    addQuestions,
 } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
     let { authorization } = req.headers
-    console.log(authorization)
     let [, myJwt] = authorization.split(' ')
     let userId = await jwt.verify(myJwt, process.env.JWTSECRETKEY)
     if (userId) {
@@ -25,7 +24,7 @@ const jwtMiddleWare = async (req, res, next) => {
 
 router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
 router.get('/getQuestions', jwtMiddleWare, getQuestions)
-router.post('/addQuestions', jwtMiddleWare, AddQuestions)
+router.post('/addQuestions', jwtMiddleWare, addQuestions)
 router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
 router.post('/saveChanges/:questionId', jwtMiddleWare, saveChanges)
 router.patch('/cancelChanges/:questionId', jwtMiddleWare, cancelChanges)
