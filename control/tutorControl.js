@@ -32,8 +32,8 @@ exports.editQuestion = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        await AllQuestions.findOne({ moduleId: id })
-        await AllQuestions.updateMany(
+        await Assesment.findOne({ moduleId: id })
+        await Assesment.updateOne(
             { tutorId: id, "allQuestions._id": questionId },
             { $set: { "allQuestions.$.edit": true } }
         );
@@ -42,19 +42,36 @@ exports.editQuestion = async (req, res) => {
 
 exports.saveChanges = async (req, res) => {
     try {
-        const { id } = req.userId
-        const { questionId } = req.params
-        const { question, optionA, optionB, optionC, optionD, answer } = req.body
-        await AllQuestions.updateMany({ moduleId: id, "allQuestions._id": questionId },
-            {
-                $set: {
-                    'allQuestions.$.edit': false, 'allQuestions.$.question': question, 'allQuestions.$.optionA': optionA,
-                    'allQuestions.$.optionB': optionB, 'allQuestions.$.optionC': optionC, 'allQuestions.$.optionD': optionD,
-                    'allQuestions.$.answer': answer
-                }
-            })
-    } catch (err) { console.error(err) }
-}
+        const { id } = req.userId;
+        const { questionId } = req.params;
+        const { question, optionA, optionB, optionC, optionD, answer } = req.body;
+
+        const updatedQuestion = {
+            'allQuestions.$.edit': false,
+            'allQuestions.$.question': question,
+            'allQuestions.$.optionA': optionA,
+            'allQuestions.$.optionB': optionB,
+            'allQuestions.$.optionC': optionC,
+            'allQuestions.$.optionD': optionD,
+            'allQuestions.$.answer': answer
+        };
+
+        const result = await Assesment.updateOne(
+            { moduleId: id, "allQuestions._id": questionId },
+            { $set: updatedQuestion }
+        );
+
+        if (result.nModified === 1) {
+            return res.json({ message: 'Question updated successfully' });
+        } else {
+            return res.status(404).json({ message: 'Question not found' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
+};
+
 
 exports.cancelChanges = async (req, res) => {
     try {
