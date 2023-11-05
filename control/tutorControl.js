@@ -192,10 +192,18 @@ exports.deleteInfo = async (req, res) => {
 }
 
 exports.sendInfo = async (req, res) => {
-    try {
-        const { infoId } = req.params
-        await Information.findByIdAndUpdate(infoId, { sendInformation: true })
-    } catch (err) { console.error(err) }
+    const { type } = req.body
+    if (type === 'send') {
+        try {
+            const { infoId } = req.params
+            await Information.findByIdAndUpdate(infoId, { sendInformation: true })
+        } catch (err) { console.error(err) }
+    } else {
+        try {
+            const { infoId } = req.params
+            await Information.findByIdAndUpdate(infoId, { sendInformation: false })
+        } catch (err) { console.error(err) }
+    }
 }
 
 
