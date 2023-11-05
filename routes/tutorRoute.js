@@ -5,6 +5,7 @@ const { getModuleInfo } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
     let { authorization } = req.headers
+    console.log(authorization)
     let [, myJwt] = authorization.split(' ')
     let userId = await jwt.verify(myJwt, process.env.JWTSECRETKEY)
     if (userId) {

@@ -3,9 +3,8 @@ const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module } = requir
 exports.getModuleInfo = async (req, res) => {
     try {
         const { id } = req.userId
-
         const moduleInformation = await Module.findOne({ tutorId: id })
-        res.json({ moduleInformation, id })
+        res.json({ moduleInformation })
     }
     catch (err) { console.error(err) }
 }

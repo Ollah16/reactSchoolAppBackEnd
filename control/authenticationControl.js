@@ -54,8 +54,8 @@ exports.handleStudentLogin = async (req, res) => {
             const comparePassword = await bcrypt.compareSync(password, userEmail.password)
 
             if (comparePassword) {
-                const { _id } = userEmail;
-                const accessToken = jwt.sign({ _id }, jwtSecretKey);
+                const { id } = userEmail;
+                const accessToken = jwt.sign({ id }, jwtSecretKey);
                 return res.json({ accessToken });
             }
             return res.json({ message: 'Incorrect Password' });
@@ -76,8 +76,8 @@ exports.handleTutorLogin = async (req, res) => {
             const comparePassword = await bcrypt.compareSync(password, userEmail.password)
 
             if (comparePassword) {
-                const { _id } = userEmail;
-                const accessToken = jwt.sign({ _id }, jwtSecretKey);
+                const { id } = userEmail;
+                const accessToken = jwt.sign({ id }, jwtSecretKey);
                 return res.json({ accessToken });
             }
             return res.json({ message: 'Incorrect Password' });
