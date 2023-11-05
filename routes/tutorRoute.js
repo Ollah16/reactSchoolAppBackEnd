@@ -1,7 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const { getModuleInfo } = require('../control/tutorControl')
+const {
+    getModuleInfo,
+    getQuestions,
+    AddQuestions,
+    editQuestion,
+    saveChanges,
+    cancelChanges,
+    deleteQuestion,
+    sendAssesment,
+} = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
     let { authorization } = req.headers
@@ -15,13 +24,14 @@ const jwtMiddleWare = async (req, res, next) => {
 }
 
 router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
+router.get('/getQuestions', jwtMiddleWare, getQuestions)
+router.post('/addQuestions', jwtMiddleWare, AddQuestions)
+router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
+router.post('/saveChanges/:questionId', jwtMiddleWare, saveChanges)
+router.patch('/cancelChanges/:questionId', jwtMiddleWare, cancelChanges)
+router.delete('/deleteAssesment/:assesmentId', jwtMiddleWare, deleteQuestion)
+router.patch('/sendAssesment/:assesmentId', jwtMiddleWare, sendAssesment)
 
-// router.get('/fecthQuestions', jwtMiddleWare, handleFetchQuestions)
-// router.post('/addquestion', jwtMiddleWare, handleAddQuestions)
-// router.patch('/editOneQuestion/:questionId', jwtMiddleWare, handleEditQuestion)
-// router.patch('/cancelEdit/:questionId', jwtMiddleWare, handleCancelChanges)
-// router.post('/editDone/:questionId', jwtMiddleWare, handleChanges)
-// router.delete('/removeAssesment/:questionId', jwtMiddleWare, handleDeleteQuestion)
 // router.post('/addInformation', jwtMiddleWare, handleAddInformations)
 // router.get('/getAllInformations', jwtMiddleWare, handleFetchInformations)
 // router.patch('/editInformation/:infoId', jwtMiddleWare, handleEditInformation)
@@ -34,7 +44,6 @@ router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
 // router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
 // router.patch('/displayResults/:assesmentId', jwtMiddleWare, handleDisplayResults)
 // router.patch('/displayInfo/:infoId', jwtMiddleWare, handleDisplayInfo)
-// router.patch('/displayAssessment/:assesmentId', jwtMiddleWare, handleDisplayAssesment)
 module.exports = router
 
 

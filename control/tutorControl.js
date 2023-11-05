@@ -1,4 +1,4 @@
-const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module } = require('../model/schoolData')
+const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module, Question, Assesment } = require('../model/schoolData')
 
 exports.getModuleInfo = async (req, res) => {
     try {
@@ -9,106 +9,91 @@ exports.getModuleInfo = async (req, res) => {
     catch (err) { console.error(err) }
 }
 
-// const handleFetchQuestions = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const allQuestions = await AllQuestions.find({ moduleId: id })
-//         if (allQuestions) return res.json({ allQuestions })
-//         return res.send('empty')
-//     }
-//     catch (err) { console.error(err) }
-// }
+exports.getQuestions = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const assesments = await Assesment.find({ tutorId: id })
+        return res.json({ assesments })
+    }
+    catch (err) { console.error(err) }
+}
 
-// const handleAddQuestions = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { testTitle, allQuestions, duration, displayForStudents } = req.body
-//         const newQuestion = { testTitle, displayForStudents, allQuestions, moduleId: id, duration }
-//         const addNewQuestion = await AllQuestions(newQuestion)
-//         addNewQuestion.save()
-//     } catch (err) { console.error(err) }
-// }
+exports.addQuestions = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { testTitle, allQuestions, duration, sendAssesment } = req.body
+        const newQuestion = { testTitle, allQuestions, duration, sendAssesment, tutorId: id }
+        const addNewQuestion = await Assesment(newQuestion)
+        addNewQuestion.save()
+    } catch (err) { console.error(err) }
+}
 
-// const handleDisplayQuestion = async (req, res) => {
-//     try {
-//         const { id } = req.userId;
-//         const { questionId } = req.params;
+exports.editQuestion = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { questionId } = req.params
+        await AllQuestions.findOne({ moduleId: id })
+        await AllQuestions.updateMany(
+            { tutorId: id, "allQuestions._id": questionId },
+            { $set: { "allQuestions.$.edit": true } }
+        );
+    } catch (err) { console.error(err) }
+}
 
-//         const findTutorQuestion = await AllQuestions.findById(questionId);
-//         const showQuestion = !findTutorQuestion?.showQuestion || false;
+exports.saveChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { questionId } = req.params
+        const { question, optionA, optionB, optionC, optionD, answer } = req.body
+        await AllQuestions.updateMany({ moduleId: id, "allQuestions._id": questionId },
+            {
+                $set: {
+                    'allQuestions.$.edit': false, 'allQuestions.$.question': question, 'allQuestions.$.optionA': optionA,
+                    'allQuestions.$.optionB': optionB, 'allQuestions.$.optionC': optionC, 'allQuestions.$.optionD': optionD,
+                    'allQuestions.$.answer': answer
+                }
+            })
+    } catch (err) { console.error(err) }
+}
 
-//         await AllQuestions.findByIdAndUpdate(questionId, { showQuestion });
+exports.cancelChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { questionId } = req.params
+        await AllQuestions.findOne({ moduleId: id })
+        await Assesment.findOneAndUpdate(
+            { tutorId: id, "allQuestions._id": questionId },
+            { $set: { "allQuestions.$.edit": false } }
+        );
+    }
+    catch (err) { console.error(err) }
+}
 
-//         const allQuestions = await AllQuestions.find({ moduleId: id });
+exports.deleteQuestion = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { questionId } = req.params;
+        await Assesment.findOneAndDelete({ tutorId: id, "allQuestions._id": questionId }
+        );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "An error occurred" });
+    }
+};
 
-//         res.status(200).json({ allQuestions });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
-
-// const handleEditQuestion = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { questionId } = req.params
-//         await AllQuestions.findOne({ moduleId: id })
-//         await AllQuestions.updateMany(
-//             { moduleId: id, "allQuestions._id": questionId },
-//             { $set: { "allQuestions.$.edit": true } }
-//         );
-//         const allQuestions = await AllQuestions.find({ moduleId: id })
-//         res.json({ allQuestions })
-//     } catch (err) { console.error(err) }
-// }
-
-// const handleCancelChanges = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { questionId } = req.params
-//         await AllQuestions.findOne({ moduleId: id })
-//         await AllQuestions.updateMany(
-//             { moduleId: id, "allQuestions._id": questionId },
-//             { $set: { "allQuestions.$.edit": false } }
-//         );
-//         const allQuestions = await AllQuestions.find({ moduleId: id })
-//         res.json({ allQuestions })
-//     }
-//     catch (err) { console.error(err) }
-// }
-
-// const handleDeleteQuestion = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { questionId } = req.params;
-//         await AllQuestions.findByIdAndDelete(questionId)
-//         const allQuestions = await AllQuestions.find({ moduleId: id })
-//         res.json({ allQuestions })
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: "An error occurred" });
-//     }
-// };
-
-// const handleChanges = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { questionId } = req.params
-//         const { question, optionA, optionB, optionC, optionD, answer } = req.body
-//         await AllQuestions.updateMany({ moduleId: id, "allQuestions._id": questionId },
-//             {
-//                 $set: {
-//                     'allQuestions.$.edit': false, 'allQuestions.$.question': question, 'allQuestions.$.optionA': optionA,
-//                     'allQuestions.$.optionB': optionB, 'allQuestions.$.optionC': optionC, 'allQuestions.$.optionD': optionD,
-//                     'allQuestions.$.answer': answer
-//                 }
-//             })
-//         const allQuestions = await AllQuestions.find({ moduleId: id })
-//         res.json({ allQuestions })
+exports.sendAssesment = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { questionId } = req.params;
+        await Assesment.findOneAndUpdate({ tutorId: id }, { sendAssesment: true }
+        );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "An error occurred" });
+    }
+};
 
 
-//     } catch (err) { console.error(err) }
-// }
 
 // const handleAddInformations = async (req, res) => {
 //     try {

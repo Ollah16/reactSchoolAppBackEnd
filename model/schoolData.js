@@ -94,9 +94,9 @@ let studentModuleSchema = new Schema({
 
 let StudentModule = model('studentmodule', studentModuleSchema)
 
-let questionsSchema = new Schema({
+let assesmentSchema = new Schema({
     testTitle: String,
-    displayForStudents: Boolean,
+    sendAssesment: Boolean,
     allQuestions: [{
         question: String,
         optionA: String,
@@ -106,12 +106,12 @@ let questionsSchema = new Schema({
         answer: String,
         edit: Boolean
     }],
-    moduleId: {
+    tutorId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
     duration: Number
 })
 
-let Question = model('question', questionsSchema)
-module.exports = { Question, Module, Grade, Announcement, Student, Tutor, StudentModule }
+let Assesment = model('assesment', assesmentSchema)
+module.exports = { Assesment, Module, Grade, Announcement, Student, Tutor, StudentModule }
