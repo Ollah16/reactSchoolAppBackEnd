@@ -1,7 +1,9 @@
 const express = require("express")
 const { handleStudentRegistration, handleTutorRegistration, handleStudentLogin, handleTutorLogin } = require("../control/authenticationControl")
 const router = express.Router()
-router.post('/signIn/student', handleStudentLogin)
+router.post('/signIn/student', (req, res) => {
+    res.send('hi')
+})
 router.post('/signIn/tutor', handleTutorLogin)
 router.post('/register/student', handleStudentRegistration)
 router.post('/register/tutor', handleTutorRegistration)
