@@ -32,17 +32,17 @@ let studentSchema = new Schema({
 
 let Student = model("student", studentSchema)
 
-let announcementSchema = new Schema({
+let informationSchema = new Schema({
     information: String,
     title: String,
-    displayForStudents: Boolean,
+    sendAssesment: Boolean,
     edit: Boolean,
-    moduleId: {
+    tutorId: {
         type: Schema.Types.ObjectId,
         ref: Student
     }
 })
-let Announcement = model("announcement", announcementSchema)
+let Information = model("information", informationSchema)
 
 let gradesSchema = new Schema({
     assesmentId: {
@@ -94,9 +94,9 @@ let studentModuleSchema = new Schema({
 
 let StudentModule = model('studentmodule', studentModuleSchema)
 
-let assesmentSchema = new Schema({
+let assessmentSchema = new Schema({
     testTitle: String,
-    sendAssesment: Boolean,
+    sendAssessment: Boolean,
     allQuestions: [{
         question: String,
         optionA: String,
@@ -113,5 +113,5 @@ let assesmentSchema = new Schema({
     duration: Number
 })
 
-let Assesment = model('assesment', assesmentSchema)
-module.exports = { Assesment, Module, Grade, Announcement, Student, Tutor, StudentModule }
+let Assessment = model('assessment', assessmentSchema)
+module.exports = { Assessment, Module, Grade, Information, Student, Tutor, StudentModule }

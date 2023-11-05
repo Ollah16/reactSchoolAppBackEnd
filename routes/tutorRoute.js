@@ -12,6 +12,16 @@ const {
     handleCancelChanges,
     cancelChanges,
     deleteAssessment,
+    sendInfo,
+    deleteInfo,
+    saveInfoChanges,
+    cancelInfoChanges,
+    editInformation,
+    getInformations,
+    addInformations,
+    saveQuestionChanges,
+    cancelQuestionChanges,
+    sendAssessment,
 } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
@@ -28,24 +38,21 @@ router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
 router.get('/getQuestions', jwtMiddleWare, getQuestions)
 router.post('/addQuestions', jwtMiddleWare, addQuestions)
 router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
-router.post('/saveChanges/:questionId', jwtMiddleWare, saveChanges)
-router.patch('/cancelChanges/:questionId', jwtMiddleWare, cancelChanges)
+router.post('/saveQuestionChanges/:questionId', jwtMiddleWare, saveQuestionChanges)
+router.patch('/cancelQuestionChanges/:questionId', jwtMiddleWare, cancelQuestionChanges)
 router.delete('/deleteQuestion/:questionId', jwtMiddleWare, deleteQuestion)
-router.patch('/sendAssessment/:assessmentId', sendAssesment)
+router.patch('/sendAssessment/:assessmentId', sendAssessment)
 router.delete('/deleteAssessment/:assessmentId', deleteAssessment)
 
+router.post('/addInformation', jwtMiddleWare, addInformations)
+router.get('/getInformations', jwtMiddleWare, getInformations)
+router.patch('/editInformation/:infoId', editInformation)
+router.patch('/cancelInfoChanges/:infoId', cancelInfoChanges)
+router.post('/saveInformation/:infoId', saveInfoChanges)
+router.delete('/deleteInformation/:infoId', deleteInfo)
+router.patch('/sendInformation/:infoId', sendInfo)
 
-// router.patch('/cancelChanges/:questionId', jwtMiddleWare, (req, res) => {
-//     console.log('hi')
-// })
 
-
-// router.post('/addInformation', jwtMiddleWare, handleAddInformations)
-// router.get('/getAllInformations', jwtMiddleWare, handleFetchInformations)
-// router.patch('/editInformation/:infoId', jwtMiddleWare, handleEditInformation)
-// router.patch('/cancelInfoEdit/:infoId', jwtMiddleWare, handleCancelEdit)
-// router.post('/saveInformation/:infoId', jwtMiddleWare, handleSaveAnnouncementChanges)
-// router.delete('/removeInformation/:infoId', jwtMiddleWare, handleDeleteInfo)
 // router.get('/fetchResults', jwtMiddleWare, handleAllResult)
 // router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPersonalInformation)
 // router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
