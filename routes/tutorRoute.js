@@ -60,8 +60,8 @@ router.get('/getBioData', jwtMiddleWare, getBioData)
 
 
 router.patch('/editBio', jwtMiddleWare, editBioData)
-router.patch('/saveBioChanges', jwtMiddleWare, saveBioChanges)
-router.post('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
+router.post('/saveBioChanges', jwtMiddleWare, saveBioChanges)
+router.patch('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
 
 
 module.exports = router
