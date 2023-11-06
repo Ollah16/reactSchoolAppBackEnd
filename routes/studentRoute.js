@@ -1,5 +1,7 @@
 const express = require('express')
-const { handleFetchPInfo, handleFetchMyModule, handleChosenModule, handlePullModuleData, handlePullAssesment, handleStudentAnswer, handleCheckStudentAttempt, handleFetchInformations, handleFetchResult, handleEditPInformation, handlePersonalInfoCancelEdit, handleSavePersonalInfoChanges, handleCountdown } = require('../control/studentControl')
+const {
+    getBioData, getModules,
+} = require('../control/studentControl')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 
@@ -12,17 +14,19 @@ const jwtMiddleWare = async (req, res, next) => {
         next()
     }
 }
-router.get('/fetchpInfo', jwtMiddleWare, handleFetchPInfo)
-router.post('/selectedModule', jwtMiddleWare, handleChosenModule)
-router.get('/fecthMyModules', jwtMiddleWare, handleFetchMyModule)
-router.get('/pullModuleData/:moduleId', jwtMiddleWare, handlePullModuleData)
-router.get('/pullAssesment/:questionId', jwtMiddleWare, handlePullAssesment)
-router.post('/pushStudentAnswer', jwtMiddleWare, handleStudentAnswer)
-router.get('/validateStudentAttempt/:assesmentId', jwtMiddleWare, handleCheckStudentAttempt)
-router.get('/getAllInformations', jwtMiddleWare, handleFetchInformations)
-router.get('/fetchResults', jwtMiddleWare, handleFetchResult)
-router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPInformation)
-router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
-router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
-router.get('/countdown/:assessmentId', handleCountdown)
+router.get('/getbiodata', jwtMiddleWare, getBioData)
+router.get('/getmodules', jwtMiddleWare, getModules)
+router.get('/getGrades', jwtMiddleWare, handleFetchResult)
+router.get('/getInformations', jwtMiddleWare, handleFetchInformations)
+
+
+// router.post('/selectedModule', jwtMiddleWare, handleChosenModule)
+// router.get('/pullModuleData/:moduleId', jwtMiddleWare, handlePullModuleData)
+// router.get('/pullAssesment/:questionId', jwtMiddleWare, handlePullAssesment)
+// router.post('/pushStudentAnswer', jwtMiddleWare, handleStudentAnswer)
+// router.get('/validateStudentAttempt/:assesmentId', jwtMiddleWare, handleCheckStudentAttempt)
+// router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPInformation)
+// router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
+// router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
+// router.get('/countdown/:assessmentId', handleCountdown)
 module.exports = router

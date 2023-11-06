@@ -37,7 +37,7 @@ let informationSchema = new Schema({
     title: String,
     sendInformation: Boolean,
     edit: Boolean,
-    tutorId: {
+    moduleId: {
         type: Schema.Types.ObjectId,
         ref: Student
     }
@@ -51,7 +51,7 @@ let gradesSchema = new Schema({
     },
     assesmentTitle: String,
     sendGrade: Boolean,
-    tutorId: {
+    moduleId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
@@ -107,7 +107,7 @@ let assessmentSchema = new Schema({
         answer: String,
         edit: Boolean
     }],
-    tutorId: {
+    moduleId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
