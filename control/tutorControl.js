@@ -235,7 +235,7 @@ exports.sendStatus = async (req, res) => {
 exports.getBioData = async (req, res) => {
     try {
         const { id } = req.userId
-        const bioData = await Tutor.findOne({ tutorId: id })
+        const bioData = await Tutor.findById(id)
         res.json({ bioData })
     } catch (err) { console.error(err) }
 }
