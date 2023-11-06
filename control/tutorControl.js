@@ -1,4 +1,4 @@
-const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module, Question, Information, Assessment } = require('../model/schoolData')
+const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module, Question, Information, Assessment, Grade } = require('../model/schoolData')
 
 exports.getModuleInfo = async (req, res) => {
     try {
@@ -206,127 +206,60 @@ exports.sendInfo = async (req, res) => {
     }
 }
 
+exports.getGrades = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const grades = await Grade.find({ tutorId: id })
+        res.json({ grades })
+    }
+    catch (err) { console.error(err) }
+}
+
+exports.sendStatus = async (req, res) => {
+    try {
+        const { id } = req.userId;
+        const { type } = req.body
+        const { assesmentId } = req.params;
+        if (type === 'send') {
+            await Grade.findOneAndUpdate({ tutorId: id, assesmentId }, { sendGrade: true });
+        } else if (type === 'cancel') {
+            await Grade.findOneAndUpdate({ tutorId: id, assesmentId }, { sendGrade: false });
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+exports.getBioData = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const bioData = await Tutor.findOne({ tutorId: id })
+        res.json({ bioData })
+    } catch (err) { console.error(err) }
+}
 
 
-// const handleAllResult = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const allMyResults = await AllGrades.find({ moduleId: id })
-//         res.json({ allMyResults })
-//     }
-//     catch (err) { console.error(err) }
-// }
+exports.editBioData = async (req, res) => {
+    try {
+        const { id } = req.userId
+        await Tutor.findByIdAndUpdate(id, { edit: true })
+    } catch (err) { console.error(err) }
+}
 
-// const handleEditPersonalInformation = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         await Tutors.findByIdAndUpdate(id, { edit: true })
-//         const personalInformation = await Tutors.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }
+exports.cancelBioChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        await Tutor.findByIdAndUpdate(id, { edit: false })
+    } catch (err) { console.error(err) }
+}
 
-// const handlePersonalInfoCancelEdit = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         await Tutors.findByIdAndUpdate(id, { edit: false })
-//         const personalInformation = await Tutors.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }
-
-// const handleSavePersonalInfoChanges = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
-//         await Tutors.findByIdAndUpdate(id, { firstName: firstName, email: email, lastName: lastName, dob: dob, homeAddress: homeAddy, mobileNumber: mobileNumber, edit: false })
-//         const personalInformation = await Tutors.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }
-
-// const handleDisplayResults = async (req, res) => {
-//     try {
-//         const { id } = req.userId;
-//         const { assesmentId } = req.params;
-//         let disGrade = ''
-//         let allMyResults = await AllGrades.find({ moduleId: id });
-//         for (const result of allMyResults) {
-//             if (result.assesmentId.toString() === assesmentId.toString()) {
-//                 disGrade = !result.displayGrade
-//                 await AllGrades.findOneAndUpdate({ assesmentId }, { displayGrade: disGrade });
-//             }
-//         }
-//         allMyResults = await AllGrades.find({ moduleId: id });
-
-//         res.status(200).json({ allMyResults });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// }
-
-// const handleDisplayInfo = async (req, res) => {
-//     try {
-//         const { id } = req.userId;
-//         const { infoId } = req.params;
-//         const { type } = req.body
-//         if (type === 'displayInfo') {
-//             await Announcements.findOneAndUpdate({ moduleId: id, _id: infoId }, { displayForStudents: true });
-//             const allInformations = await Announcements.find({ moduleId: id })
-//             res.json({ allInformations })
-//         }
-//         if (type === '!displayInfo') {
-//             await Announcements.findOneAndUpdate({ moduleId: id, _id: infoId }, { displayForStudents: false });
-//             const allInformations = await Announcements.find({ moduleId: id })
-//             res.json({ allInformations })
-//         }
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
-
-// const handleDisplayAssesment = async (req, res) => {
-//     try {
-//         const { id } = req.userId;
-//         const { assesmentId } = req.params;
-//         const { type } = req.body
-//         if (type === 'displayAssessment') {
-//             await AllQuestions.findOneAndUpdate({ moduleId: id, _id: assesmentId }, { displayForStudents: true });
-//             const allQuestions = await AllQuestions.find({ moduleId: id })
-//             res.json({ allQuestions })
-//         }
-//         if (type === '!displayAssessment') {
-//             await AllQuestions.findOneAndUpdate({ moduleId: id, _id: assesmentId }, { displayForStudents: false });
-//             const allQuestions = await AllQuestions.find({ moduleId: id })
-//             res.json({ allQuestions })
-//         }
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
-
-// module.exports = {
-//     handleDisplayAssesment,
-//     handleDisplayInfo,
-//     handleDisplayResults,
-//     handleEditPersonalInformation,
-//     handleSavePersonalInfoChanges,
-//     handlePersonalInfoCancelEdit,
-//     handleFetchPInfo,
-//     handleAllResult,
-//     handleEditInformation,
-//     handleCancelEdit,
-//     handleSaveAnnouncementChanges,
-//     handleDeleteInfo,
-//     handleFetchInformations,
-//     handleAddInformations,
-//     handleChanges,
-//     handleFetchQuestions,
-//     handleAddQuestions,
-//     handleEditQuestion,
-//     handleCancelChanges,
-//     handleDeleteQuestion
-// }
+exports.saveBioChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
+        const updateBio = { firstName, lastName, dob, homeAddy, mobileNumber, email, edit: false }
+        await Tutor.findByIdAndUpdate(id, updateBio)
+    } catch (err) { console.error(err) }
+}

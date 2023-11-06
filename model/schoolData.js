@@ -50,8 +50,8 @@ let gradesSchema = new Schema({
         ref: Student
     },
     assesmentTitle: String,
-    displayGrade: Boolean,
-    moduleId: {
+    sendGrade: Boolean,
+    tutorId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
@@ -66,6 +66,7 @@ let gradesSchema = new Schema({
         }
     }]
 })
+
 let Grade = model('grade', gradesSchema)
 
 let moduleSchema = new Schema({
@@ -74,7 +75,7 @@ let moduleSchema = new Schema({
     tutorId: {
         type: Schema.Types.ObjectId,
         ref: Student
-    },
+    }
 })
 
 let Module = model('module', moduleSchema)

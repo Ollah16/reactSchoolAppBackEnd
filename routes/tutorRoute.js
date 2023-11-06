@@ -5,12 +5,8 @@ const {
     getModuleInfo,
     getQuestions,
     editQuestion,
-    saveChanges,
     deleteQuestion,
-    sendAssesment,
     addQuestions,
-    handleCancelChanges,
-    cancelChanges,
     deleteAssessment,
     sendInfo,
     deleteInfo,
@@ -22,6 +18,12 @@ const {
     saveQuestionChanges,
     cancelQuestionChanges,
     sendAssessment,
+    getGrades,
+    sendStatus,
+    getBioData,
+    saveBioChanges,
+    cancelBioChanges,
+    editBioData,
 } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
@@ -52,13 +54,16 @@ router.post('/saveInformation/:infoId', saveInfoChanges)
 router.delete('/deleteInformation/:infoId', deleteInfo)
 router.patch('/sendInformation/:infoId', sendInfo)
 
+router.get('/getGrades', jwtMiddleWare, getGrades)
+router.patch('/sendStatus/:assesmentId', jwtMiddleWare, sendStatus)
+router.get('/getBioData', jwtMiddleWare, getBioData)
 
-// router.get('/fetchResults', jwtMiddleWare, handleAllResult)
-// router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPersonalInformation)
-// router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
-// router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
-// router.patch('/displayResults/:assesmentId', jwtMiddleWare, handleDisplayResults)
-// router.patch('/displayInfo/:infoId', jwtMiddleWare, handleDisplayInfo)
+
+router.patch('/editBio', jwtMiddleWare, editBioData)
+router.patch('/saveBioChanges', jwtMiddleWare, saveBioChanges)
+router.post('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
+
+
 module.exports = router
 
 
