@@ -259,7 +259,7 @@ exports.saveBioChanges = async (req, res) => {
     try {
         const { id } = req.userId
         const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
-        const updateBio = { firstName, lastName, dob, homeAddy, mobileNumber, email, edit: false }
+        const updateBio = { firstName, lastName, dob, homeAddress: homeAddy, mobileNumber, email, edit: false }
         await Tutor.findByIdAndUpdate(id, updateBio)
     } catch (err) { console.error(err) }
 }
