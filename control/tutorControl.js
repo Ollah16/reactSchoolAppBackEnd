@@ -9,7 +9,7 @@ exports.getModuleInfo = async (req, res) => {
     catch (err) { console.error(err) }
 }
 
-exports.getQuestions = async (req, res) => {
+exports.getAssessment = async (req, res) => {
     try {
         const { id } = req.userId
         const assessments = await Assessment.find({ tutorId: id })

@@ -3,7 +3,6 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const {
     getModuleInfo,
-    getQuestions,
     editQuestion,
     deleteQuestion,
     addQuestions,
@@ -24,6 +23,7 @@ const {
     saveBioChanges,
     cancelBioChanges,
     editBioData,
+    getAssessment,
 } = require('../control/tutorControl')
 
 const jwtMiddleWare = async (req, res, next) => {
@@ -37,7 +37,7 @@ const jwtMiddleWare = async (req, res, next) => {
 }
 
 router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
-router.get('/getQuestions', jwtMiddleWare, getQuestions)
+router.get('/getQuestions', jwtMiddleWare, getAssessment)
 router.post('/addQuestions', jwtMiddleWare, addQuestions)
 router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
 router.post('/saveQuestionChanges/:questionId', jwtMiddleWare, saveQuestionChanges)
