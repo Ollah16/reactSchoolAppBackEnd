@@ -1,4 +1,4 @@
-const { AllQuestions, Tutors, Announcements, AllGrades, Tutor, Module, Question, Information, Assessment, Grade } = require('../model/schoolData')
+const { Tutor, Module, Information, Assessment, Grade } = require('../model/schoolData')
 
 exports.getModuleInfo = async (req, res) => {
     try {

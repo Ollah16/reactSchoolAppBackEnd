@@ -1,6 +1,6 @@
 const express = require('express')
 const {
-    getBioData, getModules,
+    getBioData, getModules, getGrades, getInformations, chooseModule, isRegistered, editBioData, saveBioChanges, cancelBioChanges,
 } = require('../control/studentControl')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
@@ -15,12 +15,16 @@ const jwtMiddleWare = async (req, res, next) => {
     }
 }
 router.get('/getbiodata', jwtMiddleWare, getBioData)
-router.get('/getmodules', jwtMiddleWare, getModules)
-router.get('/getGrades', jwtMiddleWare, handleFetchResult)
-router.get('/getInformations', jwtMiddleWare, handleFetchInformations)
+router.get('/getmodules', getModules)
+router.get('/getGrades', jwtMiddleWare, getGrades)
+router.get('/getInformations', jwtMiddleWare, getInformations)
+router.post('/chooseModules', jwtMiddleWare, chooseModule)
+router.get('/ifRegistered', jwtMiddleWare, isRegistered)
 
+router.patch('/editBio', jwtMiddleWare, editBioData)
+router.post('/saveBioChanges', jwtMiddleWare, saveBioChanges)
+router.patch('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
 
-// router.post('/selectedModule', jwtMiddleWare, handleChosenModule)
 // router.get('/pullModuleData/:moduleId', jwtMiddleWare, handlePullModuleData)
 // router.get('/pullAssesment/:questionId', jwtMiddleWare, handlePullAssesment)
 // router.post('/pushStudentAnswer', jwtMiddleWare, handleStudentAnswer)

@@ -11,7 +11,6 @@ exports.getBioData = async (req, res) => {
 
 exports.getModules = async () => {
     try {
-        const { id } = req.userId
         const modules = await Module.find({})
         return res.json({ modules })
     }
@@ -36,7 +35,7 @@ exports.getInformations = async (req, res) => {
 
         const studentModule = await StudentModule.find({ studentId: id })
         const informations = await Information.find({})
-        const allInformations = [];
+        let allInformations = [];
 
         for (const student of studentModule) {
             const moduleId = student.moduleId
@@ -50,15 +49,7 @@ exports.getInformations = async (req, res) => {
                 }
             }
         }
-        res.json({ allInformations })
-    }
-    catch (err) { console.error(err) }
-}
-
-exports.getModules = async (req, res) => {
-    try {
-        const modules = await Module.find({})
-        res.json({ modules })
+        res.json({ informations: allInformations })
     }
     catch (err) { console.error(err) }
 }
@@ -78,6 +69,43 @@ exports.chooseModule = async (req, res) => {
         res.json({ modules })
     }
     catch (err) { console.error(err) }
+}
+
+exports.isRegistered = async (req, res) => {
+
+    try {
+        const { id } = req.userId;
+        const isRegistad = await StudentModule.find({ studentId: id })
+        if (isRegistad) {
+            res.json({ message: 'courses registered' })
+            return
+        } else {
+            res.json({ message: 'courses unRegistered' })
+        }
+    } catch (err) { console.error(err) }
+}
+
+exports.editBioData = async (req, res) => {
+    try {
+        const { id } = req.userId
+        await Student.findByIdAndUpdate(id, { edit: true })
+    } catch (err) { console.error(err) }
+}
+
+exports.cancelBioChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        await Student.findByIdAndUpdate(id, { edit: false })
+    } catch (err) { console.error(err) }
+}
+
+exports.saveBioChanges = async (req, res) => {
+    try {
+        const { id } = req.userId
+        const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
+        const updateBio = { firstName, lastName, dob, homeAddress: homeAddy, mobileNumber, email, edit: false }
+        await Student.findByIdAndUpdate(id, updateBio)
+    } catch (err) { console.error(err) }
 }
 
 
