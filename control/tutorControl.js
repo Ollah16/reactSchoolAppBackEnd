@@ -32,11 +32,15 @@ exports.editQuestion = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        await Assessment.findOne({ moduleId: id })
-        await Assessment.updateOne(
-            { tutorId: id, "allQuestions._id": questionId },
-            { $set: { "allQuestions.$.edit": true } }
-        );
+        let assessment = await Assessment.findOne({ tutorId: id })
+        let { allQuestions } = assessment
+        for (const quest of allQuestions) {
+            if (quest._id == questionId) {
+                quest.edit = true
+            }
+        }
+        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions })
+
     } catch (err) { console.error(err) }
 }
 
@@ -46,12 +50,12 @@ exports.saveQuestionChanges = async (req, res) => {
         const { questionId } = req.params;
         const { question, optionA, optionB, optionC, optionD, answer } = req.body;
 
-        const assessment = await Assessment.findOne({ tutorId: id });
+        let assessment = await Assessment.findOne({ tutorId: id });
 
-        const { allQuestions } = assessment;
+        let { allQuestions } = assessment;
 
         for (const quest of allQuestions) {
-            if (quest._id.toString() == questionId.toString()) {
+            if (quest._id == questionId) {
                 quest.question = question,
                     quest.optionA = optionA,
                     quest.optionB = optionB,
@@ -62,7 +66,7 @@ exports.saveQuestionChanges = async (req, res) => {
             }
         }
 
-        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions });
+        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions);
 
     } catch (err) {
         console.error(err);
@@ -78,17 +82,17 @@ exports.cancelQuestionChanges = async (req, res) => {
         const { id } = req.userId;
         const { questionId } = req.params;
 
-        const assessment = await Assessment.findOne({ tutorId: id });
+        let assessment = await Assessment.findOne({ tutorId: id });
 
-        const { allQuestions } = assessment;
+        let { allQuestions } = assessment;
 
         for (const question of allQuestions) {
-            if (question._id.toString() == questionId.toString()) {
+            if (question._id == questionId) {
                 question.edit = false
             }
         }
 
-        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions });
+        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions);
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -103,7 +107,7 @@ exports.deleteQuestion = async (req, res) => {
         let assessment = await Assessment.findOne({ tutorId: id })
         let { allQuestions } = assessment
         allQuestions = allQuestions.filter((quest) => quest._id.toString() == questionId.toString())
-        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions })
+        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions)
 
     } catch (error) {
         console.error(error);
