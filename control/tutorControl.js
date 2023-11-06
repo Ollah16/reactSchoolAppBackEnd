@@ -66,7 +66,7 @@ exports.saveQuestionChanges = async (req, res) => {
             }
         }
 
-        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions);
+        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions });
 
     } catch (err) {
         console.error(err);
@@ -92,7 +92,7 @@ exports.cancelQuestionChanges = async (req, res) => {
             }
         }
 
-        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions);
+        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -107,7 +107,7 @@ exports.deleteQuestion = async (req, res) => {
         let assessment = await Assessment.findOne({ tutorId: id })
         let { allQuestions } = assessment
         allQuestions = allQuestions.filter((quest) => quest._id.toString() == questionId.toString())
-        await Assessment.findOneAndUpdate({ tutorId: id }, allQuestions)
+        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions })
 
     } catch (error) {
         console.error(error);
