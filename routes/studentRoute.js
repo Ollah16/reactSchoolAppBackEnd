@@ -29,8 +29,5 @@ router.patch('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
 // router.get('/pullAssesment/:questionId', jwtMiddleWare, handlePullAssesment)
 // router.post('/pushStudentAnswer', jwtMiddleWare, handleStudentAnswer)
 // router.get('/validateStudentAttempt/:assesmentId', jwtMiddleWare, handleCheckStudentAttempt)
-// router.patch('/editPersonalInformation', jwtMiddleWare, handleEditPInformation)
-// router.patch('/cancelPersonalEdit', jwtMiddleWare, handlePersonalInfoCancelEdit)
-// router.post('/savePersonalInformation', jwtMiddleWare, handleSavePersonalInfoChanges)
 // router.get('/countdown/:assessmentId', handleCountdown)
 module.exports = router
