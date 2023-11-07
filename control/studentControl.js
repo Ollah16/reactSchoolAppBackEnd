@@ -112,8 +112,8 @@ exports.getModuleData = async (req, res) => {
     try {
         const { moduleId } = req.params
         const assessments = await Assessment.find({ moduleId, sendAssessment: true })
-        const information = await Information.find({ moduleId, sendInformation: true })
-        res.json({ assessments, information })
+        const informations = await Information.find({ moduleId, sendInformation: true })
+        res.json({ assessments, informations })
     }
     catch (err) { console.error(err) }
 }
