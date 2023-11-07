@@ -20,7 +20,7 @@ exports.getModules = async (req, res) => {
 exports.getGrades = async (req, res) => {
     try {
         const { id } = req.userId;
-        const grades = await Grade.findOne({ sendGrade: true, studentId: id });
+        const grades = await Grade.find({ sendGrade: true, studentId: id });
         res.json({ grades })
     }
     catch (err) {
@@ -118,148 +118,95 @@ exports.getModuleData = async (req, res) => {
     catch (err) { console.error(err) }
 }
 
-// const handlePullAssesment = async (req, res) => {
-//     try {
-//         const { questionId } = req.params
-//         const myAssessment = await AllQuestions.findOne({ _id: questionId, displayForStudents: true })
-//         res.json({ myAssessment })
-//     }
-//     catch (err) { console.error(err) }
-// }
+exports.getAssessment = async (req, res) => {
+    try {
+        const { assessmentId } = req.params
+        const test = await Assessment.findOne({ _id: assessmentId })
+        res.json({ test })
+    }
+    catch (err) { console.error(err) }
+}
 
-// const handleCountdown = async (req, res) => {
-//     try {
-//         let { assessmentId } = req.params
-//         let findAssessment = await AllQuestions.findOne({ _id: assessmentId })
-//         let { duration } = findAssessment
-//         const countdownInterval = setInterval(() => {
-//             duration -= 1
-//             if (duration < 1) {
-//                 res.json({ duration })
-//                 clearInterval(countdownInterval)
-//             }
-//         }, 1000);
-//     } catch (err) {
-//         console.error(err);
-//     }
-// }
+exports.checkAttempt = async (req, res) => {
+    try {
+        const { assesmentId } = req.params
+        const { id } = req.userId
+        const isAttempted = await Grade.findOne({ assesmentId, studentId: id })
 
-// const handleStudentAnswer = async (req, res) => {
-//     try {
-//         const { id } = req.userId;
-//         const { studentGrade } = req.body;
+        if (isAttempted) {
+            return res.json({ message: 'attempted' })
+        }
+        return res.json({ message: 'unattempted' })
+    }
+    catch (err) { console.error(err) }
+}
 
-//         const studentDetail = await Students.findById(id);
-//         const { firstName } = studentDetail;
+exports.pushGrade = async (req, res) => {
+    try {
+        const { id } = req.userId;
+        const { grade } = req.body;
 
-//         const findAssesment = await AllQuestions.find();
+        const assessment = await Assessment.find();
 
-//         let score = 0;
-//         let testTitle = ''
-//         let newAssId = ''
-//         let modId = ''
-//         for (const data of studentGrade) {
-//             const assessmentId = data.assessmentId;
-//             const questionId = data.questionId
-//             const answer = data.answer
-//             for (const ass of findAssesment) {
-//                 if (assessmentId.toString() === ass._id.toString()) {
-//                     testTitle = ass.testTitle
-//                     newAssId = ass._id
-//                     modId = ass.moduleId
-//                     for (const quest of ass.allQuestions) {
-//                         if (questionId.toString() === quest._id.toString() && quest.answer === answer) {
-//                             score += 1;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
+        let score = 0;
+        let assessmentTitle;
+        let assessmentId;
+        let moduleId;
 
-//         const findModInAllModule = await AllModules.findOne({ moduleId: modId });
-//         const { moduleName, moduleId, moduleCode } = findModInAllModule;
+        for (const data of grade) {
+            const testId = data.assessmentId;
+            const questionId = data.questionId
+            const answer = data.answer
 
-//         const newGrade = {
-//             assesmentTitle: testTitle,
-//             assesmentId: newAssId,
-//             displayGrade: false,
-//             showResults: false,
-//             moduleId,
-//             grades: {
-//                 moduleName,
-//                 moduleCode,
-//                 grade: score,
-//                 studentId: id,
-//                 studentName: firstName
-//             }
-//         };
+            for (const assess of assessment) {
+                if (testId.toString() === assess._id.toString()) {
+                    assessmentTitle = assess.testTitle
+                    assessmentId = assess._id
+                    moduleId = assess.moduleId
+                    for (const question of assess.allQuestions) {
+                        if (questionId.toString() === question._id.toString() && question.answer === answer) {
+                            score += 1;
+                        }
+                    }
+                }
+            }
+        }
 
-//         const ifAssessmentExist = await AllGrades.findOne({ assesmentId: newAssId });
+        const module = await Module.findOne({ moduleId });
 
-//         if (ifAssessmentExist) {
-//             const { grades } = ifAssessmentExist;
-//             const checkStudent = grades.find(std => std.studentId.toString() === id.toString())
-//             if (!checkStudent) {
-//                 grades.push({ moduleName, moduleCode, grade: score, studentId: id, studentName: firstName });
-//                 await AllGrades.findOneAndUpdate({ assesmentId: newAssId }, { grades });
-//             }
-//         } else {
-//             const newGradePush = await AllGrades(newGrade);
-//             await newGradePush.save();
-//         }
+        const newGrade = {
+            assessmentTitle,
+            assessmentId,
+            sendGrade: false,
+            moduleId,
+            grades: {
+                moduleName: module.moduleName,
+                moduleCode: module.moduleCode,
+                grade: score,
+                studentId: id,
+            }
+        };
 
-//         res.status(200).json({ message: "Student answers handled successfully." });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
 
-// const handleCheckStudentAttempt = async (req, res) => {
-//     try {
-//         const { assesmentId } = req.params
-//         const { id } = req.userId
-//         const findAssesment = await AllGrades.findOne({ assesmentId })
-//         if (findAssesment) {
-//             const { grades } = findAssesment
-//             const findStudentAttmp = grades.find(grad => grad.studentId.toString() === id.toString())
-//             if (findStudentAttmp) {
-//                 return res.send('attempted')
-//             }
-//         }
-//         return res.send('unattempted')
-//     }
-//     catch (err) { console.error(err) }
-// }
+        const isGradeExist = await Grade.findOne({ assessmentId });
+
+        if (ifAssessmentExist) {
+            const { grades } = isGradeExist;
+            const student = grades.find(std => std.studentId.toString() === id.toString())
+            if (!student) {
+                grades.push({ moduleName, moduleCode: module.moduleCode, grade: score, studentId: id });
+                await Grade.findOneAndUpdate({ assessmentId }, { grades });
+            }
+        } else {
+            const newGradePush = await AllGrades(newGrade);
+            await newGradePush.save();
+        }
+        res.status(200).json({ message: "Student answers handled successfully." });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 
 
-
-
-// const handleEditPInformation = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         await Students.findByIdAndUpdate(id, { edit: true })
-//         const personalInformation = await Students.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }
-
-// const handlePersonalInfoCancelEdit = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         await Students.findByIdAndUpdate(id, { edit: false })
-//         const personalInformation = await Students.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }
-
-// const handleSavePersonalInfoChanges = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
-//         await Students.findByIdAndUpdate(id, { firstName: firstName, email: email, lastName: lastName, dob: dob, homeAddress: homeAddy, mobileNumber: mobileNumber, edit: false })
-//         const personalInformation = await Students.findById(id)
-//         res.json({ personalInformation })
-//     } catch (err) { console.error(err) }
-// }

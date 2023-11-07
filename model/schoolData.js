@@ -59,7 +59,6 @@ let gradesSchema = new Schema({
         moduleName: String,
         moduleCode: Number,
         grade: Number,
-        studentName: String,
         studentId: {
             type: Schema.Types.ObjectId,
             ref: Student
