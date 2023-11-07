@@ -1,6 +1,6 @@
 const express = require('express')
 const {
-    getBioData, getModules, getGrades, getInformations, chooseModule, isRegistered, editBioData, saveBioChanges, cancelBioChanges,
+    getBioData, getModules, getGrades, getInformations, chooseModule, isRegistered, editBioData, saveBioChanges, cancelBioChanges, getModuleData,
 } = require('../control/studentControl')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
@@ -25,7 +25,8 @@ router.patch('/editBio', jwtMiddleWare, editBioData)
 router.post('/saveBioChanges', jwtMiddleWare, saveBioChanges)
 router.patch('/cancelBioChanges', jwtMiddleWare, cancelBioChanges)
 
-// router.get('/pullModuleData/:moduleId', jwtMiddleWare, handlePullModuleData)
+router.get('/getModuleData/:moduleId', jwtMiddleWare, getModuleData)
+
 // router.get('/pullAssesment/:questionId', jwtMiddleWare, handlePullAssesment)
 // router.post('/pushStudentAnswer', jwtMiddleWare, handleStudentAnswer)
 // router.get('/validateStudentAttempt/:assesmentId', jwtMiddleWare, handleCheckStudentAttempt)

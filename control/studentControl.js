@@ -1,4 +1,4 @@
-const { Module, Student, Grade, Information, StudentModule } = require("../model/schoolData")
+const { Module, Student, Grade, Information, StudentModule, Assessment } = require("../model/schoolData")
 
 exports.getBioData = async (req, res) => {
     try {
@@ -9,7 +9,7 @@ exports.getBioData = async (req, res) => {
     catch (err) { console.error(err) }
 }
 
-exports.getModules = async () => {
+exports.getModules = async (req, res) => {
     try {
         const modules = await Module.find({})
         return res.json({ modules })
@@ -17,7 +17,7 @@ exports.getModules = async () => {
     catch (err) { console.error(err) }
 }
 
-exports.getGrades = async () => {
+exports.getGrades = async (req, res) => {
     try {
         const { id } = req.userId;
         const grades = await Grade.findOne({ sendGrade: true, studentId: id });
@@ -76,7 +76,7 @@ exports.isRegistered = async (req, res) => {
     try {
         const { id } = req.userId;
         const isRegistad = await StudentModule.find({ studentId: id })
-        if (isRegistad) {
+        if (isRegistad.length) {
             res.json({ message: 'courses registered' })
             return
         } else {
@@ -108,33 +108,15 @@ exports.saveBioChanges = async (req, res) => {
     } catch (err) { console.error(err) }
 }
 
-
-
-// const handlePullModuleData = async (req, res) => {
-//     try {
-//         const { id } = req.userId
-//         const { moduleId } = req.params
-//         const findStudent = await Students.findById(id)
-//         const { studentModules } = findStudent
-//         const allQuestions = await AllQuestions.find({ moduleId, displayForStudents: true })
-//         const information = await Announcements.find()
-//         const allInformations = [];
-//         for (const std of studentModules) {
-//             const modId = std.moduleId
-//             const findModules = information.find(info => info.moduleId.toString() === modId.toString())
-//             if (findModules) {
-//                 for (const inf of information) {
-//                     const { moduleId } = findModules
-//                     if (inf.moduleId.toString() === moduleId.toString() && inf.displayForStudents) {
-//                         allInformations.push({ title: inf.title, information: inf.information })
-//                     }
-//                 }
-//             }
-//         }
-//         res.json({ allQuestions, allInformations })
-//     }
-//     catch (err) { console.error(err) }
-// }
+exports.getModuleData = async (req, res) => {
+    try {
+        const { moduleId } = req.params
+        const assessments = await Assessment.find({ moduleId, sendAssessment: true })
+        const information = await Information.find({ moduleId, sendInformation: true })
+        res.json({ assessments, information })
+    }
+    catch (err) { console.error(err) }
+}
 
 // const handlePullAssesment = async (req, res) => {
 //     try {
