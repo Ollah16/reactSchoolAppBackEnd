@@ -45,11 +45,11 @@ let informationSchema = new Schema({
 let Information = model("information", informationSchema)
 
 let gradesSchema = new Schema({
-    assesmentId: {
+    assessmentId: {
         type: Schema.Types.ObjectId,
         ref: Student
     },
-    assesmentTitle: String,
+    assessmentTitle: String,
     sendGrade: Boolean,
     moduleId: {
         type: Schema.Types.ObjectId,
@@ -95,7 +95,7 @@ let studentModuleSchema = new Schema({
 let StudentModule = model('studentmodule', studentModuleSchema)
 
 let assessmentSchema = new Schema({
-    testTitle: String,
+    assessmentTitle: String,
     sendAssessment: Boolean,
     allQuestions: [{
         question: String,

@@ -1,4 +1,4 @@
-const { Tutor, Module, Information, Assessment, Grade } = require('../model/schoolData')
+const { Tutor, Module, Information, Assessment, Grade, Student } = require('../model/schoolData')
 
 exports.getModuleInfo = async (req, res) => {
     try {
@@ -12,7 +12,9 @@ exports.getModuleInfo = async (req, res) => {
 exports.getAssessment = async (req, res) => {
     try {
         const { id } = req.userId
-        const assessments = await Assessment.find({ moduleId: id })
+        const module = await Module.findOne({ tutorId: id })
+        const assessments = await Assessment.find({ moduleId: module._id })
+
         return res.json({ assessments })
     }
     catch (err) { console.error(err) }
@@ -21,9 +23,9 @@ exports.getAssessment = async (req, res) => {
 exports.addQuestions = async (req, res) => {
     try {
         const { id } = req.userId
-        const { testTitle, allQuestions, duration, sendAssessment } = req.body
+        const { assessmentTitle, allQuestions, duration, sendAssessment } = req.body
         const module = await Module.findOne({ tutorId: id })
-        const newQuestion = { testTitle, allQuestions, duration, sendAssessment, moduleId: module._id }
+        const newQuestion = { assessmentTitle, allQuestions, duration, sendAssessment, moduleId: module._id }
         const addNewQuestion = await Assessment(newQuestion)
         addNewQuestion.save()
     } catch (err) { console.error(err) }
@@ -31,24 +33,22 @@ exports.addQuestions = async (req, res) => {
 
 exports.editQuestion = async (req, res) => {
     try {
-        const { id } = req.userId
-        const { questionId } = req.params
-        let assessment = await Assessment.find({ tutorId: id })
-        for (const assess of assessment) {
-            for (const quest of assess.allQuestions) {
-                if (questionId.toString() === quest._id.toString()) {
-                    quest.edit = true
-                }
-            }
+        const { id } = req.userId;
+        const { questionId } = req.params;
 
-            await Assessment.updateOne(
-                { tutorId: id },
-                { $set: { allQuestions: assess.allQuestions } }
-            );
-        }
+        const module = await Module.findOne({ tutorId: id });
 
-    } catch (err) { console.error(err) }
+        await Assessment.updateMany(
+            { moduleId: module._id },
+            { $set: { 'allQuestions.$[elem].edit': true } },
+            { arrayFilters: [{ 'elem._id': questionId }] }
+        );
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 }
+
 
 exports.saveQuestionChanges = async (req, res) => {
     try {
@@ -56,24 +56,23 @@ exports.saveQuestionChanges = async (req, res) => {
         const { questionId } = req.params;
         const { question, optionA, optionB, optionC, optionD, answer } = req.body;
 
-        let assessment = await Assessment.find({ tutorId: id });
+        const module = await Module.findOne({ tutorId: id });
 
-        let { allQuestions } = assessment;
-
-        for (const quest of allQuestions) {
-            if (quest._id == questionId) {
-                console.log(quest._id, questionId)
-                quest.question = question,
-                    quest.optionA = optionA,
-                    quest.optionB = optionB,
-                    quest.optionC = optionC,
-                    quest.optionD = optionD,
-                    quest.answer = answer,
-                    quest.edit = false
-            }
-        }
-
-        await Assessment.findOneAndUpdate({ tutorId: id }, { allQuestions });
+        await Assessment.updateMany(
+            { moduleId: module._id, 'allQuestions._id': questionId },
+            {
+                $set: {
+                    'allQuestions.$[elem].question': question,
+                    'allQuestions.$[elem].optionA': optionA,
+                    'allQuestions.$[elem].optionB': optionB,
+                    'allQuestions.$[elem].optionC': optionC,
+                    'allQuestions.$[elem].optionD': optionD,
+                    'allQuestions.$[elem].answer': answer,
+                    'allQuestions.$[elem].edit': false
+                }
+            },
+            { arrayFilters: [{ 'elem._id': questionId }] }
+        );
 
     } catch (err) {
         console.error(err);
@@ -83,23 +82,22 @@ exports.saveQuestionChanges = async (req, res) => {
 
 exports.cancelQuestionChanges = async (req, res) => {
     try {
-        const { id } = req.userId
-        const { questionId } = req.params
-        let assessment = await Assessment.find({ tutorId: id })
-        for (const assess of assessment) {
-            for (const quest of assess.allQuestions) {
-                if (questionId.toString() === quest._id.toString()) {
-                    quest.edit = false
-                }
-            }
+        const { id } = req.userId;
+        const { questionId } = req.params;
 
-            await Assessment.updateOne(
-                { tutorId: id },
-                { $set: { allQuestions: assess.allQuestions } }
-            );
-        }
+        const module = await Module.findOne({ tutorId: id });
 
-    } catch (err) { console.error(err) }
+        await Assessment.updateMany(
+            { moduleId: module._id },
+            { $set: { 'allQuestions.$[elem].edit': false } },
+            { arrayFilters: [{ 'elem._id': questionId }] }
+        );
+
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
+    }
 };
 
 
@@ -107,7 +105,23 @@ exports.deleteQuestion = async (req, res) => {
     try {
         const { id } = req.userId
         const { questionId } = req.params
-        await Assessment.findOneAndDelete({ tutorId: id, 'allQuestions._id': questionId })
+        const module = await Module.findOne({ tutorId: id });
+        const assessment = await Assessment.findOneAndUpdate(
+            { moduleId: module._id, 'allQuestions._id': questionId },
+            {
+                $pull: {
+                    'allQuestions': { _id: questionId }
+                }
+            },
+            { new: true }
+        );
+        if (assessment) {
+            const { allQuestions, _id } = assessment
+
+            if (allQuestions.length < 1 || allQuestions.length === 0) {
+                return await Assessment.findByIdAndDelete(_id)
+            }
+        }
 
     } catch (err) { console.error(err) }
 };
@@ -213,8 +227,28 @@ exports.getGrades = async (req, res) => {
     try {
         const { id } = req.userId
         const module = await Module.findOne({ tutorId: id })
-        const grades = await Grade.find({ moduleId: module._id })
-        res.json({ grades })
+        let moduleGrade = await Grade.find({ moduleId: module._id })
+        const students = await Student.find()
+
+        moduleGrade = moduleGrade.map((grade) => {
+            const updatedGrades = grade.grades.map((grad) => {
+                const student = students.find((std) => std._id.toString() == grad.studentId.toString());
+                if (student) {
+                    return {
+                        ...grad,
+                        studentName: student.firstName
+                    };
+                }
+                return grad;
+            });
+
+            return {
+                ...grade._doc,
+                grades: updatedGrades
+            };
+        });
+
+        res.json({ grades: moduleGrade })
     }
     catch (err) { console.error(err) }
 }
@@ -223,12 +257,12 @@ exports.sendStatus = async (req, res) => {
     try {
         const { id } = req.userId;
         const { type } = req.body
-        const { assesmentId } = req.params;
+        const { assessmentId } = req.params;
         const module = await Module.findOne({ tutorId: id })
         if (type === 'send') {
-            await Grade.findOneAndUpdate({ moduleId: module._id, assesmentId }, { sendGrade: true });
+            await Grade.findOneAndUpdate({ moduleId: module._id, assessmentId }, { sendGrade: true });
         } else if (type === 'cancel') {
-            await Grade.findOneAndUpdate({ moduleId: module._id, assesmentId }, { sendGrade: false });
+            await Grade.findOneAndUpdate({ moduleId: module._id, assessmentId }, { sendGrade: false });
         }
 
     } catch (err) {

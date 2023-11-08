@@ -14,9 +14,9 @@ exports.handleStudentRegistration = async (req, res) => {
             const hashedPassword = await bcrypt.hashSync(password, salt);
             const newStudent = await Student({ email, password: hashedPassword, firstName, lastName, dob, homeAddress, mobileNumber, edit: false });
             await newStudent.save();
-            return res.json({ message: 'Registration Successful' });
+            return res.json({ message: 'Registration Successful, Proceed To Sign In' });
         } else {
-            return res.json({ message: 'Email already exists' });
+            return res.json({ error: 'Email already exists' });
         }
     } catch (err) {
         console.error(err);
@@ -36,9 +36,9 @@ exports.handleTutorRegistration = async (req, res) => {
             const newModule = await Module({ moduleName, moduleCode, tutorId: savedTutor._id })
             await newModule.save()
 
-            return res.json({ message: 'Registration Successful' });
+            return res.json({ message: 'Registration Successful, Proceed To Sign In' });
         } else {
-            return res.json({ message: 'Email already exists' });
+            return res.json({ error: 'Email already exists' });
         }
     } catch (err) {
         console.error(err);
@@ -58,9 +58,9 @@ exports.handleStudentLogin = async (req, res) => {
                 const accessToken = jwt.sign({ id }, jwtSecretKey);
                 return res.json({ accessToken });
             }
-            return res.json({ message: 'Incorrect Password' });
+            return res.json({ error: 'Incorrect Password' });
         }
-        return res.json({ message: 'Incorrect email or password is not correct' });
+        return res.json({ error: 'Incorrect email or password' });
     }
     catch (err) {
         console.error(err);
@@ -80,9 +80,9 @@ exports.handleTutorLogin = async (req, res) => {
                 const accessToken = jwt.sign({ id }, jwtSecretKey);
                 return res.json({ accessToken });
             }
-            return res.json({ message: 'Incorrect Password' });
+            return res.json({ error: 'Incorrect Password' });
         }
-        return res.json({ message: 'Incorrect email or password is not correct' });
+        return res.json({ error: 'Incorrect email or password' });
     }
     catch (err) {
         console.error(err);

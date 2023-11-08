@@ -10,8 +10,19 @@ exports.getBioData = async (req, res) => {
 }
 
 exports.getModules = async (req, res) => {
+
     try {
         const modules = await Module.find({})
+        return res.json({ modules })
+
+    }
+    catch (err) { console.error(err) }
+}
+
+exports.getStudentModules = async (req, res) => {
+    const { id } = req.userId
+    try {
+        const modules = await StudentModule.find({ studentId: id })
         return res.json({ modules })
     }
     catch (err) { console.error(err) }
@@ -20,39 +31,54 @@ exports.getModules = async (req, res) => {
 exports.getGrades = async (req, res) => {
     try {
         const { id } = req.userId;
-        const grades = await Grade.find({ sendGrade: true, studentId: id });
-        res.json({ grades })
-    }
-    catch (err) {
+        let studentGrades = await Grade.find({ sendGrade: true });
+        let grades = []
+        studentGrades = studentGrades.map((grad) => {
+            const stdGrade = grad.grades.find((std) => std.studentId.toString() === id.toString());
+            if (stdGrade) {
+                grades.push({
+                    assessmentTitle: grad.assessmentTitle,
+                    moduleName: stdGrade.moduleName,
+                    moduleCode: stdGrade.moduleCode,
+                    grade: stdGrade.grade
+                })
+            }
+        });
+
+        res.json({ grades });
+    } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred' });
     }
-}
+};
+
 
 exports.getInformations = async (req, res) => {
     try {
-        const { id } = req.userId
+        const { id } = req.userId;
 
-        const studentModule = await StudentModule.find({ studentId: id })
-        const informations = await Information.find({})
-        let allInformations = [];
+        const studentModule = await StudentModule.find({ studentId: id });
+        const informations = await Information.find({});
 
-        for (const student of studentModule) {
-            const moduleId = student.moduleId
-            const information = informations.find((info) => info.moduleId.toString() === moduleId.toString())
-            if (information) {
-                for (const info of informations) {
-                    if (info.moduleId.toString() === moduleId.toString() && info.sendInformation) {
-                        info.moduleName = student.moduleName
-                        allInformations.push(info)
-                    }
-                }
+        let allInformations = []
+
+        for (const info of informations) {
+            const studentInfo = studentModule.find(stm => stm.moduleId.toString() == info.moduleId.toString());
+            if (studentInfo && info.sendInformation) {
+                allInformations.push({
+                    information: info.information,
+                    moduleName: studentInfo.moduleName,
+                    title: info.title
+                })
             }
         }
-        res.json({ informations: allInformations })
+
+        res.json({ informations: allInformations });
+    } catch (err) {
+        console.error(err);
     }
-    catch (err) { console.error(err) }
 }
+
 
 exports.chooseModule = async (req, res) => {
     try {
@@ -113,7 +139,31 @@ exports.getModuleData = async (req, res) => {
         const { moduleId } = req.params
         const assessments = await Assessment.find({ moduleId, sendAssessment: true })
         const informations = await Information.find({ moduleId, sendInformation: true })
-        res.json({ assessments, informations })
+        const studentModule = await StudentModule.find({ studentId: id });
+
+        let allInformations = []
+        for (const info of informations) {
+            const student = studentModule.find(stm => stm.moduleId.toString() == info.moduleId.toString());
+            if (student) {
+                allInformations.push({
+                    information: info.information,
+                    moduleName: studentInfo.moduleName,
+                    title: info.title
+                })
+            }
+        }
+
+        let allAssessment = []
+        for (const assess of assessments) {
+            const student = studentModule.find(stm => stm.moduleId.toString() == assess.moduleId.toString());
+            if (student) {
+                allAssessment.push({
+                    assessmentTitle: assess.assessmentTitle,
+                    _id: assess._id
+                })
+            }
+        }
+        res.json({ assessments: allAssessment, informations: allInformations })
     }
     catch (err) { console.error(err) }
 }
@@ -129,12 +179,16 @@ exports.getAssessment = async (req, res) => {
 
 exports.checkAttempt = async (req, res) => {
     try {
-        const { assesmentId } = req.params
+        const { assessmentId } = req.params
         const { id } = req.userId
-        const isAttempted = await Grade.findOne({ assesmentId, studentId: id })
 
-        if (isAttempted) {
-            return res.json({ message: 'attempted' })
+        let assessmentGrade = await Grade.findOne({ assessmentId })
+        if (assessmentGrade) {
+            let student = assessmentGrade.grades.find((std) => std.studentId.toString() === id.toString())
+            if (student) {
+                return res.json({ message: 'attempted' })
+            }
+            return res.json({ message: 'unattempted' })
         }
         return res.json({ message: 'unattempted' })
     }
@@ -144,8 +198,7 @@ exports.checkAttempt = async (req, res) => {
 exports.pushGrade = async (req, res) => {
     try {
         const { id } = req.userId;
-        const { grade } = req.body;
-
+        const { studentGrade } = req.body;
         const assessment = await Assessment.find();
 
         let score = 0;
@@ -153,14 +206,14 @@ exports.pushGrade = async (req, res) => {
         let assessmentId;
         let moduleId;
 
-        for (const data of grade) {
+        for (const data of studentGrade) {
             const testId = data.assessmentId;
             const questionId = data.questionId
             const answer = data.answer
 
             for (const assess of assessment) {
                 if (testId.toString() === assess._id.toString()) {
-                    assessmentTitle = assess.testTitle
+                    assessmentTitle = assess.assessmentTitle
                     assessmentId = assess._id
                     moduleId = assess.moduleId
                     for (const question of assess.allQuestions) {
@@ -172,7 +225,7 @@ exports.pushGrade = async (req, res) => {
             }
         }
 
-        const module = await Module.findOne({ moduleId });
+        const module = await Module.findOne({ _id: moduleId });
 
         const newGrade = {
             assessmentTitle,
@@ -187,10 +240,9 @@ exports.pushGrade = async (req, res) => {
             }
         };
 
-
         const isGradeExist = await Grade.findOne({ assessmentId });
 
-        if (ifAssessmentExist) {
+        if (isGradeExist) {
             const { grades } = isGradeExist;
             const student = grades.find(std => std.studentId.toString() === id.toString())
             if (!student) {
@@ -198,7 +250,7 @@ exports.pushGrade = async (req, res) => {
                 await Grade.findOneAndUpdate({ assessmentId }, { grades });
             }
         } else {
-            const newGradePush = await AllGrades(newGrade);
+            const newGradePush = await Grade(newGrade);
             await newGradePush.save();
         }
         res.status(200).json({ message: "Student answers handled successfully." });

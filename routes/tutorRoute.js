@@ -37,7 +37,8 @@ const jwtMiddleWare = async (req, res, next) => {
 }
 
 router.get('/moduleInformation', jwtMiddleWare, getModuleInfo)
-router.get('/getQuestions', jwtMiddleWare, getAssessment)
+router.get('/getAssessments', jwtMiddleWare, getAssessment)
+
 router.post('/addQuestions', jwtMiddleWare, addQuestions)
 router.patch('/editQuestion/:questionId', jwtMiddleWare, editQuestion)
 router.post('/saveQuestionChanges/:questionId', jwtMiddleWare, saveQuestionChanges)
@@ -55,7 +56,7 @@ router.delete('/deleteInformation/:infoId', deleteInfo)
 router.patch('/sendInformation/:infoId', sendInfo)
 
 router.get('/getGrades', jwtMiddleWare, getGrades)
-router.patch('/sendStatus/:assesmentId', jwtMiddleWare, sendStatus)
+router.patch('/sendStatus/:assessmentId', jwtMiddleWare, sendStatus)
 router.get('/getBioData', jwtMiddleWare, getBioData)
 
 
