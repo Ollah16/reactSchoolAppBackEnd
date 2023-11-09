@@ -1,6 +1,6 @@
 const express = require('express')
 const {
-    getBioData, getModules, getGrades, getInformations, chooseModule, isRegistered, editBioData, saveBioChanges, cancelBioChanges, getModuleData, getAssessment, checkAttempt, pushGrade, getStudentModules,
+    getBioData, getModules, getGrades, getInformations, chooseModule, isRegistered, editBioData, saveBioChanges, cancelBioChanges, getModuleData, getAssessment, checkAttempt, pushGrade, getStudentModules, finishAssessment, startAssessment,
 } = require('../control/studentControl')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
@@ -31,5 +31,8 @@ router.get('/getAssessment/:assessmentId', jwtMiddleWare, getAssessment)
 
 router.get('/assessmentAttempt/:assessmentId', jwtMiddleWare, checkAttempt)
 router.post('/pushgrade', jwtMiddleWare, pushGrade)
+
+router.get('/finishAttempt/:assessmentId', jwtMiddleWare, finishAssessment)
+router.get('/startAttempt/:assessmentId', jwtMiddleWare, startAssessment)
 
 module.exports = router

@@ -1,4 +1,4 @@
-const { Module, Student, Grade, Information, StudentModule, Assessment } = require("../model/schoolData")
+const { Module, Student, Grade, Information, StudentModule, Assessment, AssessmentAttempt } = require("../model/schoolData")
 
 exports.getBioData = async (req, res) => {
     try {
@@ -159,15 +159,41 @@ exports.checkAttempt = async (req, res) => {
         const { assessmentId } = req.params
         const { id } = req.userId
 
-        let assessmentGrade = await Grade.findOne({ assessmentId })
-        if (assessmentGrade) {
-            let student = assessmentGrade.grades.find((std) => std.studentId.toString() === id.toString())
-            if (student) {
-                return res.json({ message: 'attempted' })
-            }
-            return res.json({ message: 'unattempted' })
+        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, finish: true })
+        if (assessmentAttempt) {
+            return res.json({ message: 'attempted' })
         }
+
         return res.json({ message: 'unattempted' })
+    }
+    catch (err) { console.error(err) }
+}
+
+exports.startAssessment = async (req, res) => {
+    try {
+        const { assessmentId } = req.params
+        const { id } = req.userId
+
+        let startAssessment = await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true })
+        for (const assessment of startAssessment) {
+            if (assessment.duration > 0) {
+                assessment.duration -= 1
+                return res.json({ duration: assessment.duration })
+
+            } else if (assessment.duration < 1) {
+                await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true })
+            }
+        }
+    }
+    catch (err) { console.error(err) }
+}
+
+exports.finishAssessment = async (req, res) => {
+    try {
+        const { assessmentId } = req.params
+        const { id } = req.userId
+
+        await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true })
     }
     catch (err) { console.error(err) }
 }
