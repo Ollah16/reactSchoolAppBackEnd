@@ -139,31 +139,8 @@ exports.getModuleData = async (req, res) => {
         const { moduleId } = req.params
         const assessments = await Assessment.find({ moduleId, sendAssessment: true })
         const informations = await Information.find({ moduleId, sendInformation: true })
-        const studentModule = await StudentModule.find({ studentId: id });
 
-        let allInformations = []
-        for (const info of informations) {
-            const student = studentModule.find(stm => stm.moduleId.toString() == info.moduleId.toString());
-            if (student) {
-                allInformations.push({
-                    information: info.information,
-                    moduleName: studentInfo.moduleName,
-                    title: info.title
-                })
-            }
-        }
-
-        let allAssessment = []
-        for (const assess of assessments) {
-            const student = studentModule.find(stm => stm.moduleId.toString() == assess.moduleId.toString());
-            if (student) {
-                allAssessment.push({
-                    assessmentTitle: assess.assessmentTitle,
-                    _id: assess._id
-                })
-            }
-        }
-        res.json({ assessments: allAssessment, informations: allInformations })
+        res.json({ assessments, informations })
     }
     catch (err) { console.error(err) }
 }
