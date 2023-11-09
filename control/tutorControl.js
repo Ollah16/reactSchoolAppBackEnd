@@ -1,4 +1,4 @@
-const { Tutor, Module, Information, Assessment, Grade, Student } = require('../model/schoolData')
+const { Tutor, Module, Information, Assessment, Grade, Student, StudentModule, AssessmentAttempt } = require('../model/schoolData')
 
 exports.getModuleInfo = async (req, res) => {
     try {
@@ -20,14 +20,28 @@ exports.getAssessment = async (req, res) => {
     catch (err) { console.error(err) }
 }
 
-exports.addQuestions = async (req, res) => {
+exports.addAssessment = async (req, res) => {
     try {
         const { id } = req.userId
         const { assessmentTitle, allQuestions, duration, sendAssessment } = req.body
         const module = await Module.findOne({ tutorId: id })
         const newQuestion = { assessmentTitle, allQuestions, duration, sendAssessment, moduleId: module._id }
         const addNewQuestion = await Assessment(newQuestion)
-        addNewQuestion.save()
+        const savedAssessment = await addNewQuestion.save()
+
+        const students = await StudentModule.find({ moduleId: module._id })
+        for (const student of students) {
+            const studentId = student.studentId
+            const addStudentAttempt = await AssessmentAttempt({
+                assessmentId: savedAssessment.assessmentId,
+                studentId,
+                duration,
+                start: false,
+                finish: false
+            })
+            await addStudentAttempt.save()
+        }
+
     } catch (err) { console.error(err) }
 }
 
@@ -164,7 +178,7 @@ exports.addInformations = async (req, res) => {
         const module = await Module.findOne({ tutorId: id })
         const freshInformation = { information, title, sendInformation, edit, moduleId: module._id }
         const newInfo = await Information(freshInformation)
-        newInfo.save()
+        await newInfo.save()
     }
     catch (err) { console.error(err) }
 }

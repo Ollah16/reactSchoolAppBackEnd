@@ -114,4 +114,21 @@ let assessmentSchema = new Schema({
 })
 
 let Assessment = model('assessment', assessmentSchema)
-module.exports = { Assessment, Module, Grade, Information, Student, Tutor, StudentModule }
+
+let attemptSchema = new Schema({
+    assessmentId: {
+        type: Schema.Types.ObjectId,
+        ref: Student
+    },
+    studentId: {
+        type: Schema.Types.ObjectId,
+        ref: Student
+    },
+    duration: Number,
+    start: Boolean,
+    finish: Boolean
+})
+
+let AssessmentAttempt = model('assessmentattempt', attemptSchema)
+
+module.exports = { Assessment, Module, Grade, Information, Student, Tutor, StudentModule, AssessmentAttempt }
