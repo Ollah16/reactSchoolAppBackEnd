@@ -198,7 +198,7 @@ exports.startAssessment = async (req, res) => {
                 await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true, duration: i });
             }
 
-            await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true });
+            await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true, duration: 0 });
         }
 
     } catch (err) {
