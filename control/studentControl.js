@@ -187,13 +187,11 @@ exports.startAssessment = async (req, res) => {
         const { assessmentId } = req.params;
         const { id } = req.userId;
 
-        const durationLeft = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
+        const duration = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
 
-        res.json({ duration: durationLeft.duration })
+        if (duration.duration > 0) {
 
-        if (durationLeft.duration > 0) {
-
-            for (let i = durationLeft.duration; i > 0; i--) {
+            for (let i = duration.duration; i > 0; i--) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true, duration: i });
             }
