@@ -174,7 +174,7 @@ exports.checkAttempt = async (req, res) => {
         const { assessmentId } = req.params
         const { id } = req.userId
 
-        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
+        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, duration: duration > 0, finish: false })
         return res.json({ assessmentAttempt })
 
     }
