@@ -92,13 +92,14 @@ exports.chooseModule = async (req, res) => {
             await AddStudentModule.save()
 
             const assessment = await Assessment.find({ moduleId: doc.moduleId })
+
             if (assessment) {
                 for (const assess of assessment) {
                     const assessmentId = assess._id
                     const addStudentAttempt = await AssessmentAttempt({
                         assessmentId,
                         studentId: id,
-                        duration: assessment.duration,
+                        duration: assess.duration,
                         start: false,
                         finish: false
                     })
@@ -173,17 +174,15 @@ exports.checkAttempt = async (req, res) => {
         const { assessmentId } = req.params
         const { id } = req.userId
 
-        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, finish: true, duration: 0 })
-        if (assessmentAttempt) {
-            return res.json({ message: 'attempted' })
-        }
+        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
+        return res.json({ assessmentAttempt })
 
-        return res.json({ message: 'unattempted' })
     }
     catch (err) { console.error(err) }
 }
 
 exports.startAssessment = async (req, res) => {
+
     try {
         const { assessmentId } = req.params;
         const { id } = req.userId;

@@ -27,20 +27,7 @@ exports.addAssessment = async (req, res) => {
         const module = await Module.findOne({ tutorId: id })
         const newQuestion = { assessmentTitle, allQuestions, duration, sendAssessment, moduleId: module._id }
         const addNewQuestion = await Assessment(newQuestion)
-        const savedAssessment = await addNewQuestion.save()
-
-        const students = await StudentModule.find({ moduleId: module._id })
-        for (const student of students) {
-            const studentId = student.studentId
-            const addStudentAttempt = await AssessmentAttempt({
-                assessmentId: savedAssessment._id,
-                studentId,
-                duration,
-                start: false,
-                finish: false
-            })
-            await addStudentAttempt.save()
-        }
+        await addNewQuestion.save()
 
     } catch (err) { console.error(err) }
 }
