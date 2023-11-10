@@ -213,7 +213,7 @@ exports.finishAssessment = async (req, res) => {
         const { assessmentId } = req.params
         const { id } = req.userId
 
-        await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true })
+        await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true, duration: 0 })
     }
     catch (err) { console.error(err) }
 }
