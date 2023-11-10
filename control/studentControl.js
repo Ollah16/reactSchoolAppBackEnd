@@ -171,15 +171,23 @@ exports.getAssessment = async (req, res) => {
 
 exports.checkAttempt = async (req, res) => {
     try {
-        const { assessmentId } = req.params
-        const { id } = req.userId
+        const { assessmentId } = req.params;
+        const { id } = req.userId;
 
-        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, duration: duration > 0, finish: false })
-        return res.json({ assessmentAttempt })
+        const assessmentAttempt = await AssessmentAttempt.findOne({
+            assessmentId,
+            studentId: id,
+            duration: { $gt: 0 },
+            finish: false,
+        });
 
+        res.json({ assessmentAttempt });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
     }
-    catch (err) { console.error(err) }
-}
+};
+
 
 exports.startAssessment = async (req, res) => {
 
