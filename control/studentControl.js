@@ -85,14 +85,28 @@ exports.chooseModule = async (req, res) => {
         const { id } = req.userId
         const { data } = req.body
 
+
         for (const doc of data) {
             const studentModules = { moduleName: doc.moduleName, moduleCode: doc.moduleCode, moduleId: doc.moduleId, studentId: id }
             const AddStudentModule = await StudentModule(studentModules)
             await AddStudentModule.save()
-        }
 
-        const modules = await StudentModule.find({ studentId: id })
-        res.json({ modules })
+            const assessment = await Assessment.find({ moduleId: doc.moduleId })
+            if (assessment) {
+                for (const assess of assessment) {
+                    const assessmentId = assess._id
+                    const addStudentAttempt = await AssessmentAttempt({
+                        assessmentId,
+                        studentId: id,
+                        duration: assessment.duration,
+                        start: false,
+                        finish: false
+                    })
+
+                    await addStudentAttempt.save()
+                }
+            }
+        }
     }
     catch (err) { console.error(err) }
 }
@@ -159,7 +173,7 @@ exports.checkAttempt = async (req, res) => {
         const { assessmentId } = req.params
         const { id } = req.userId
 
-        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, finish: true })
+        let assessmentAttempt = await AssessmentAttempt.findOne({ assessmentId, studentId: id, finish: true, duration: 0 })
         if (assessmentAttempt) {
             return res.json({ message: 'attempted' })
         }
@@ -171,22 +185,29 @@ exports.checkAttempt = async (req, res) => {
 
 exports.startAssessment = async (req, res) => {
     try {
-        const { assessmentId } = req.params
-        const { id } = req.userId
+        const { assessmentId } = req.params;
+        const { id } = req.userId;
 
-        let startAssessment = await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true })
-        for (const assessment of startAssessment) {
-            if (assessment.duration > 0) {
-                assessment.duration -= 1
-                return res.json({ duration: assessment.duration })
+        const durationLeft = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
 
-            } else if (assessment.duration < 1) {
-                await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true })
+        res.json({ duration: durationLeft.duration })
+
+        if (durationLeft.duration > 0) {
+
+            for (let i = durationLeft.duration; i > 0; i--) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true, duration: i });
             }
+
+            await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true });
         }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('An error occurred');
     }
-    catch (err) { console.error(err) }
-}
+};
+
 
 exports.finishAssessment = async (req, res) => {
     try {

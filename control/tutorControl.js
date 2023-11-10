@@ -33,7 +33,7 @@ exports.addAssessment = async (req, res) => {
         for (const student of students) {
             const studentId = student.studentId
             const addStudentAttempt = await AssessmentAttempt({
-                assessmentId: savedAssessment.assessmentId,
+                assessmentId: savedAssessment._id,
                 studentId,
                 duration,
                 start: false,
