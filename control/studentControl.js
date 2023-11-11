@@ -287,10 +287,10 @@ exports.pushGrade = async (req, res) => {
             }
         };
 
-        const isGradeExist = await Grade.findOne({ assessmentId });
+        const assessmentExist = await Grade.findOne({ assessmentId });
 
-        if (isGradeExist) {
-            const { grades } = isGradeExist;
+        if (assessmentExist) {
+            const { grades } = assessmentExist;
             const student = grades.find(std => std.studentId.toString() === id.toString())
             if (!student) {
                 grades.push({ moduleName, moduleCode: module.moduleCode, grade: score, studentId: id });

@@ -231,25 +231,26 @@ exports.getGrades = async (req, res) => {
         let moduleGrade = await Grade.find({ moduleId: module._id })
         const students = await Student.find()
 
-        moduleGrade = moduleGrade.map((grade) => {
-            const updatedGrades = grade.grades.map((grad) => {
+        const grades = [];
+        for (const grade of moduleGrade) {
+            const updatedGrades = [];
+            for (const grad of grade.grades) {
                 const student = students.find((std) => std._id.toString() == grad.studentId.toString());
                 if (student) {
-                    return {
+                    updatedGrades.push({
                         ...grad,
-                        studentName: student.firstName
-                    };
+                        studentName: student.firstName,
+                    });
                 }
-                return grad;
-            });
+            }
 
-            return {
+            grades.push({
                 ...grade._doc,
-                grades: updatedGrades
-            };
-        });
+                grades: updatedGrades,
+            });
+        }
 
-        res.json({ grades: moduleGrade })
+        res.json({ grades })
     }
     catch (err) { console.error(err) }
 }
