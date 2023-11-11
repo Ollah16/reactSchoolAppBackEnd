@@ -176,9 +176,7 @@ exports.checkAttempt = async (req, res) => {
 
         const assessmentAttempt = await AssessmentAttempt.findOne({
             assessmentId,
-            studentId: id,
-            duration: { $gt: 0 },
-            finish: false,
+            studentId: id
         });
 
         res.json({ assessmentAttempt });
@@ -190,28 +188,48 @@ exports.checkAttempt = async (req, res) => {
 
 
 exports.startAssessment = async (req, res) => {
-
     try {
         const { assessmentId } = req.params;
         const { id } = req.userId;
 
-        const duration = await AssessmentAttempt.findOne({ assessmentId, studentId: id })
+        let duration = await AssessmentAttempt.findOne({
+            assessmentId,
+            studentId: id,
+            start: false,
+            finish: false,
+        });
 
-        if (duration.duration > 0) {
-
-            for (let i = duration.duration; i > 0; i--) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { start: true, duration: i });
-            }
-
-            await AssessmentAttempt.findOneAndUpdate({ assessmentId, studentId: id }, { finish: true, duration: 0 });
+        if (!duration) {
+            duration = await AssessmentAttempt.findOne({
+                assessmentId,
+                studentId: id,
+                start: true,
+                finish: false,
+            });
         }
 
+        if (duration) {
+            for (let i = duration.duration; i > 0; i--) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await AssessmentAttempt.findOneAndUpdate(
+                    { assessmentId, studentId: id },
+                    { start: true, duration: i }
+                );
+            }
+
+            await AssessmentAttempt.findOneAndUpdate(
+                { assessmentId, studentId: id },
+                { finish: true, duration: 0 }
+            );
+        }
+
+        res.status(200).json({ message: 'Assessment finished' });
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
     }
 };
+
 
 
 exports.finishAssessment = async (req, res) => {
