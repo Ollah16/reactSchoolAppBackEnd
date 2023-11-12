@@ -33,8 +33,10 @@ exports.getGrades = async (req, res) => {
         const { id } = req.userId;
         let studentGrades = await Grade.find({ sendGrade: true });
         let grades = []
-        studentGrades = studentGrades.map((grad) => {
-            const stdGrade = grad.grades.find((std) => std.studentId.toString() === id.toString());
+
+        for (const student of studentGrades) {
+            const stdGrade = student.grades.find((std) => std.studentId.toString() === id.toString());
+
             if (stdGrade) {
                 grades.push({
                     assessmentTitle: grad.assessmentTitle,
@@ -43,7 +45,7 @@ exports.getGrades = async (req, res) => {
                     grade: stdGrade.grade
                 })
             }
-        });
+        }
 
         res.json({ grades });
     } catch (err) {
