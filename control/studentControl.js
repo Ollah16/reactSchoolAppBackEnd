@@ -35,15 +35,15 @@ exports.getGrades = async (req, res) => {
         let grades = []
 
         for (const student of studentGrades) {
-            const stdGrade = student.grades.find((std) => std.studentId.toString() == id.toString());
-
-            if (stdGrade) {
-                grades.push({
-                    assessmentTitle: student.assessmentTitle,
-                    moduleName: stdGrade.moduleName,
-                    moduleCode: stdGrade.moduleCode,
-                    grade: stdGrade.grade
-                })
+            for (const grade of student.grades) {
+                if (grade.studentId.toString() == id.toString()) {
+                    grades.push({
+                        assessmentTitle: student.assessmentTitle,
+                        moduleName: grade.moduleName,
+                        moduleCode: grade.moduleCode,
+                        grade: grade.grade
+                    })
+                }
             }
         }
 
