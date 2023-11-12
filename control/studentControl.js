@@ -39,7 +39,7 @@ exports.getGrades = async (req, res) => {
 
             if (stdGrade) {
                 grades.push({
-                    assessmentTitle: grad.assessmentTitle,
+                    assessmentTitle: student.assessmentTitle,
                     moduleName: stdGrade.moduleName,
                     moduleCode: stdGrade.moduleCode,
                     grade: stdGrade.grade
