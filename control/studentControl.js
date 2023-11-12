@@ -35,7 +35,7 @@ exports.getGrades = async (req, res) => {
         let grades = []
 
         for (const student of studentGrades) {
-            const stdGrade = student.grades.find((std) => std.studentId.toString() === id.toString());
+            const stdGrade = student.grades.find((std) => std.studentId.toString() == id.toString());
 
             if (stdGrade) {
                 grades.push({
