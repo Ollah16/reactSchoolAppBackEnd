@@ -149,7 +149,6 @@ exports.sendAssessment = async (req, res) => {
             const { assessmentId } = req.params;
             await Assessment.findOneAndUpdate({ _id: assessmentId }, { sendAssessment: true }
             );
-            return
         } else if (type === 'cancel') {
             const { assessmentId } = req.params;
             await Assessment.findOneAndUpdate({ _id: assessmentId }, { sendAssessment: false }
