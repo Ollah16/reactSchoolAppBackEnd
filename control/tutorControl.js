@@ -141,7 +141,9 @@ exports.deleteQuestion = async (req, res) => {
 };
 
 exports.sendAssessment = async (req, res) => {
+
     try {
+        const { id } = req.userId
         const { type } = req.body
         if (type === 'send') {
             const { assessmentId } = req.params;
@@ -153,6 +155,7 @@ exports.sendAssessment = async (req, res) => {
             await Assessment.findOneAndUpdate({ _id: assessmentId }, { sendAssessment: false }
             );
         }
+        const module = await Module.findOne({ tutorId: id });
 
         const assessments = await Assessment.find({ moduleId: module._id })
 
@@ -164,16 +167,20 @@ exports.sendAssessment = async (req, res) => {
 };
 
 exports.deleteAssessment = async (req, res) => {
+
     try {
+        const { id } = req.userId
         const { assessmentId } = req.params;
         await Assessment.findOneAndDelete({ _id: assessmentId });
+        const module = await Module.findOne({ tutorId: id });
+        const assessments = await Assessment.find({ moduleId: module._id })
+        return res.json({ assessments })
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error occurred" });
     }
-    const assessments = await Assessment.find({ moduleId: module._id })
 
-    return res.json({ assessments })
+
 };
 
 
@@ -204,17 +211,24 @@ exports.getInformations = async (req, res) => {
 
 exports.editInformation = async (req, res) => {
     try {
+        const { id } = req.userId
         const { infoId } = req.params
         await Information.findByIdAndUpdate(infoId, { edit: true })
+
+        const module = await Module.findOne({ tutorId: id });
         const informations = await Information.find({ moduleId: module._id })
         res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
 exports.cancelInfoChanges = async (req, res) => {
+
     try {
+        const { id } = req.userId
         const { infoId } = req.params
         await Information.findByIdAndUpdate(infoId, { edit: false })
+
+        const module = await Module.findOne({ tutorId: id });
         const informations = await Information.find({ moduleId: module._id })
         res.json({ informations })
     } catch (err) { console.error(err) }
@@ -222,9 +236,13 @@ exports.cancelInfoChanges = async (req, res) => {
 
 exports.saveInfoChanges = async (req, res) => {
     try {
+        const { id } = req.userId
         const { infoId } = req.params
         const { titleNew, informationNew } = req.body
         await Information.findByIdAndUpdate(infoId, { title: titleNew, information: informationNew, edit: false })
+
+        const module = await Module.findOne({ tutorId: id });
+
         const informations = await Information.find({ moduleId: module._id })
         res.json({ informations })
     } catch (err) { console.error(err) }
@@ -232,28 +250,35 @@ exports.saveInfoChanges = async (req, res) => {
 
 exports.deleteInfo = async (req, res) => {
     try {
+        const { id } = req.userId
         const { infoId } = req.params
         await Information.findByIdAndRemove(infoId)
+
+        const module = await Module.findOne({ tutorId: id });
         const informations = await Information.find({ moduleId: module._id })
         res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
 exports.sendInfo = async (req, res) => {
-    const { type } = req.body
-    if (type === 'send') {
-        try {
+    try {
+        const { id } = req.userId
+        const { type } = req.body
+        if (type === 'send') {
+
             const { infoId } = req.params
             await Information.findByIdAndUpdate(infoId, { sendInformation: true })
-        } catch (err) { console.error(err) }
-    } else {
-        try {
+        } else {
             const { infoId } = req.params
             await Information.findByIdAndUpdate(infoId, { sendInformation: false })
-        } catch (err) { console.error(err) }
+        }
+
+        const module = await Module.findOne({ tutorId: id });
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     }
-    const informations = await Information.find({ moduleId: module._id })
-    res.json({ informations })
+    catch (err) { console.error(err) }
+
 }
 
 exports.getGrades = async (req, res) => {
