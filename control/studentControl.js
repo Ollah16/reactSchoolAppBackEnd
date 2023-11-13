@@ -179,7 +179,7 @@ exports.checkAttempt = async (req, res) => {
             const addStudentAttempt = await AssessmentAttempt({
                 assessmentId: assessment._id,
                 studentId: id,
-                duration: assess.duration,
+                duration: assessment.duration,
                 start: false,
                 finish: false
             })
