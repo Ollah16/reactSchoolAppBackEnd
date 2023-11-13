@@ -93,22 +93,7 @@ exports.chooseModule = async (req, res) => {
             const AddStudentModule = await StudentModule(studentModules)
             await AddStudentModule.save()
 
-            const assessment = await Assessment.find({ moduleId: doc.moduleId })
 
-            if (assessment) {
-                for (const assess of assessment) {
-                    const assessmentId = assess._id
-                    const addStudentAttempt = await AssessmentAttempt({
-                        assessmentId,
-                        studentId: id,
-                        duration: assess.duration,
-                        start: false,
-                        finish: false
-                    })
-
-                    await addStudentAttempt.save()
-                }
-            }
         }
     }
     catch (err) { console.error(err) }
@@ -182,11 +167,31 @@ exports.checkAttempt = async (req, res) => {
         const { assessmentId } = req.params;
         const { id } = req.userId;
 
-        const assessmentAttempt = await AssessmentAttempt.findOne({
+        let assessmentAttempt = await AssessmentAttempt.findOne({
             assessmentId,
             studentId: id
         });
 
+        if (!assessmentAttempt) {
+
+            const assessment = await Assessment.findOne({ _id: assessmentId })
+
+            const addStudentAttempt = await AssessmentAttempt({
+                assessmentId: assessment._id,
+                studentId: id,
+                duration: assess.duration,
+                start: false,
+                finish: false
+            })
+
+            await addStudentAttempt.save()
+
+        }
+
+        assessmentAttempt = await AssessmentAttempt.findOne({
+            assessmentId,
+            studentId: id
+        });
         res.json({ assessmentAttempt });
     } catch (err) {
         console.error(err);
