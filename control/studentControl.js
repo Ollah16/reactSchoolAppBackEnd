@@ -132,6 +132,8 @@ exports.editBioData = async (req, res) => {
     try {
         const { id } = req.userId
         await Student.findByIdAndUpdate(id, { edit: true })
+        const bioData = await Student.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
 
@@ -139,6 +141,8 @@ exports.cancelBioChanges = async (req, res) => {
     try {
         const { id } = req.userId
         await Student.findByIdAndUpdate(id, { edit: false })
+        const bioData = await Student.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
 
@@ -148,6 +152,8 @@ exports.saveBioChanges = async (req, res) => {
         const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
         const updateBio = { firstName, lastName, dob, homeAddress: homeAddy, mobileNumber, email, edit: false }
         await Student.findByIdAndUpdate(id, updateBio)
+        const bioData = await Student.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
 

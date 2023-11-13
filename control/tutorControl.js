@@ -28,6 +28,8 @@ exports.addAssessment = async (req, res) => {
         const newQuestion = { assessmentTitle, allQuestions, duration, sendAssessment, moduleId: module._id }
         const addNewQuestion = await Assessment(newQuestion)
         await addNewQuestion.save()
+        const assessments = await Assessment.find({ moduleId: module._id })
+        return res.json({ assessments })
 
     } catch (err) { console.error(err) }
 }
@@ -44,6 +46,10 @@ exports.editQuestion = async (req, res) => {
             { $set: { 'allQuestions.$[elem].edit': true } },
             { arrayFilters: [{ 'elem._id': questionId }] }
         );
+
+        const assessments = await Assessment.find({ moduleId: module._id })
+
+        return res.json({ assessments })
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -75,6 +81,9 @@ exports.saveQuestionChanges = async (req, res) => {
             { arrayFilters: [{ 'elem._id': questionId }] }
         );
 
+        const assessments = await Assessment.find({ moduleId: module._id })
+
+        return res.json({ assessments })
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -94,7 +103,9 @@ exports.cancelQuestionChanges = async (req, res) => {
             { arrayFilters: [{ 'elem._id': questionId }] }
         );
 
+        const assessments = await Assessment.find({ moduleId: module._id })
 
+        return res.json({ assessments })
     } catch (err) {
         console.error(err);
         res.status(500).send('An error occurred');
@@ -123,7 +134,9 @@ exports.deleteQuestion = async (req, res) => {
                 return await Assessment.findByIdAndDelete(_id)
             }
         }
+        const assessments = await Assessment.find({ moduleId: module._id })
 
+        return res.json({ assessments })
     } catch (err) { console.error(err) }
 };
 
@@ -140,6 +153,10 @@ exports.sendAssessment = async (req, res) => {
             await Assessment.findOneAndUpdate({ _id: assessmentId }, { sendAssessment: false }
             );
         }
+
+        const assessments = await Assessment.find({ moduleId: module._id })
+
+        return res.json({ assessments })
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error occurred" });
@@ -154,6 +171,9 @@ exports.deleteAssessment = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "An error occurred" });
     }
+    const assessments = await Assessment.find({ moduleId: module._id })
+
+    return res.json({ assessments })
 };
 
 
@@ -166,6 +186,8 @@ exports.addInformations = async (req, res) => {
         const freshInformation = { information, title, sendInformation, edit, moduleId: module._id }
         const newInfo = await Information(freshInformation)
         await newInfo.save()
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     }
     catch (err) { console.error(err) }
 }
@@ -184,6 +206,8 @@ exports.editInformation = async (req, res) => {
     try {
         const { infoId } = req.params
         await Information.findByIdAndUpdate(infoId, { edit: true })
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
@@ -191,6 +215,8 @@ exports.cancelInfoChanges = async (req, res) => {
     try {
         const { infoId } = req.params
         await Information.findByIdAndUpdate(infoId, { edit: false })
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
@@ -199,6 +225,8 @@ exports.saveInfoChanges = async (req, res) => {
         const { infoId } = req.params
         const { titleNew, informationNew } = req.body
         await Information.findByIdAndUpdate(infoId, { title: titleNew, information: informationNew, edit: false })
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
@@ -206,6 +234,8 @@ exports.deleteInfo = async (req, res) => {
     try {
         const { infoId } = req.params
         await Information.findByIdAndRemove(infoId)
+        const informations = await Information.find({ moduleId: module._id })
+        res.json({ informations })
     } catch (err) { console.error(err) }
 }
 
@@ -222,6 +252,8 @@ exports.sendInfo = async (req, res) => {
             await Information.findByIdAndUpdate(infoId, { sendInformation: false })
         } catch (err) { console.error(err) }
     }
+    const informations = await Information.find({ moduleId: module._id })
+    res.json({ informations })
 }
 
 exports.getGrades = async (req, res) => {
@@ -267,6 +299,30 @@ exports.sendStatus = async (req, res) => {
             await Grade.findOneAndUpdate({ moduleId: module._id, assessmentId }, { sendGrade: false });
         }
 
+        let moduleGrade = await Grade.find({ moduleId: module._id })
+        const students = await Student.find()
+
+        const grades = [];
+        for (const grade of moduleGrade) {
+            const updatedGrades = [];
+            for (const grad of grade.grades) {
+                const student = students.find((std) => std._id.toString() == grad.studentId.toString());
+                if (student) {
+                    updatedGrades.push({
+                        ...grad,
+                        studentName: student.firstName,
+                    });
+                }
+            }
+
+            grades.push({
+                ...grade._doc,
+                grades: updatedGrades,
+            });
+        }
+
+        res.json({ grades })
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal server error" });
@@ -286,6 +342,8 @@ exports.editBioData = async (req, res) => {
     try {
         const { id } = req.userId
         await Tutor.findByIdAndUpdate(id, { edit: true })
+        const bioData = await Tutor.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
 
@@ -293,6 +351,8 @@ exports.cancelBioChanges = async (req, res) => {
     try {
         const { id } = req.userId
         await Tutor.findByIdAndUpdate(id, { edit: false })
+        const bioData = await Tutor.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
 
@@ -302,5 +362,7 @@ exports.saveBioChanges = async (req, res) => {
         const { firstName, lastName, dob, homeAddy, mobileNumber, email } = req.body
         const updateBio = { firstName, lastName, dob, homeAddress: homeAddy, mobileNumber, email, edit: false }
         await Tutor.findByIdAndUpdate(id, updateBio)
+        const bioData = await Tutor.findById(id)
+        res.json({ bioData })
     } catch (err) { console.error(err) }
 }
