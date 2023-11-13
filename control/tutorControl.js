@@ -156,10 +156,9 @@ exports.sendAssessment = async (req, res) => {
             );
         }
         const module = await Module.findOne({ tutorId: id });
-
         const assessments = await Assessment.find({ moduleId: module._id })
-
         return res.json({ assessments })
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "An error occurred" });
